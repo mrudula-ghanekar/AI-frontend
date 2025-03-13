@@ -33,7 +33,7 @@ export default function App() {
     const formData = new FormData();
     file.forEach(f => formData.append('files', f));
     formData.append('role', role);
-    const res = await axios.post('http://localhost:8080/api/compare-batch', formData);
+    const batchResponse = await axios.post('https://resumehelp-backend-production.up.railway.app/api/compare-batch', formData);
     setBatchResult((res.data));
   };
 
