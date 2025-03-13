@@ -39,6 +39,7 @@ export default function App() {
     }
   };
 
+  // ✅ Corrected API URL here
   const handleBatchCompare = async () => {
     if (!file || !role) {
       alert("Please upload files and enter role.");
@@ -46,10 +47,11 @@ export default function App() {
     }
     try {
       const formData = new FormData();
-      file.forEach(f => formData.append('files', f)); // Note: backend should expect List<MultipartFile> files
+      file.forEach(f => formData.append('files', f)); // Backend expects 'files' (List<MultipartFile>)
       formData.append('role', role);
 
-      const response = await axios.post(`${API_BASE_URL}/api/batchResponse`, formData);
+      // ✅ Corrected endpoint for batch comparison
+      const response = await axios.post(`${API_BASE_URL}/api/compare-batch`, formData);
       console.log("Batch Response:", response.data);
       setBatchResult(response.data);
     } catch (error) {
