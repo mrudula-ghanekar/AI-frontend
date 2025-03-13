@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gradient-to-br from-gray-100 to-blue-100 min-h-screen font-inter text-gray-800;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-bold;
+}
+
+button {
+  @apply transition duration-200 ease-in-out;
+}
+
+input, label {
+  @apply focus:outline-none focus:ring-2 focus:ring-indigo-400;
+}
