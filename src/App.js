@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './index.css';
 import './App.css';
-import BatchCompare from './BatchCompare';
 
 export default function App() {
   const [mode, setMode] = useState('candidate');
@@ -11,10 +10,6 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [batchResult, setBatchResult] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-  const API_KEY = process.env.REACT_APP_API_KEY; // Loaded API Key from env
-
-  console.log("API Base URL:", API_BASE_URL); // Check if ENV is working
-  console.log("API Key Loaded:", API_KEY ? "Yes" : "No"); // Check if key is loaded (no need to print key)
 
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
@@ -25,19 +20,17 @@ export default function App() {
   };
 
   const handleUpload = async () => {
+    if (!file || !role) {
+      alert("Please provide both file and role.");
+      return;
+    }
     try {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('role', role);
       formData.append('mode', mode);
-      console.log("Sending request to:", `${API_BASE_URL}/api/analyze`);
 
-      const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData, {
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`, // Add API Key here
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
       console.log("Response:", response.data);
       setResult(response.data);
     } catch (error) {
@@ -47,18 +40,16 @@ export default function App() {
   };
 
   const handleBatchCompare = async () => {
+    if (!file || !role) {
+      alert("Please upload files and enter role.");
+      return;
+    }
     try {
       const formData = new FormData();
-      file.forEach(f => formData.append('files', f));
+      file.forEach(f => formData.append('files', f)); // Note: backend should expect List<MultipartFile> files
       formData.append('role', role);
-      console.log("Sending request to:", `${API_BASE_URL}/api/batchResponse`);
 
-      const response = await axios.post(`${API_BASE_URL}/api/batchResponse`, formData, {
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`, // Add API Key here
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      const response = await axios.post(`${API_BASE_URL}/api/batchResponse`, formData);
       console.log("Batch Response:", response.data);
       setBatchResult(response.data);
     } catch (error) {
@@ -85,7 +76,6 @@ export default function App() {
       <h1 className="text-5xl font-extrabold text-gray-800 mb-4">🚀 ResumeHelp AI</h1>
       <p className="text-lg text-gray-700 mb-8 text-center">AI-Powered Resume Analyzer & Job Match Tool</p>
 
-      {/* Mode Switch */}
       <button
         onClick={handleModeToggle}
         className="bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-indigo-700 transition mb-6"
@@ -93,7 +83,6 @@ export default function App() {
         Switch to {mode === 'candidate' ? 'Company' : 'Candidate'} Mode
       </button>
 
-      {/* Upload Section */}
       <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-3xl space-y-6">
         <input
           type="text"
@@ -125,52 +114,46 @@ export default function App() {
         </div>
       </div>
 
-      {/* Candidate Mode Result */}
-      {result && (
-        <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
-          <h2 className="text-3xl font-bold text-gray-800">📊 Analysis Result</h2>
-          <p className="text-lg"><strong>Suited for Role:</strong> {result.suited_for_role === 'Yes' ? '✅ Yes' : '❌ No'}</p>
-
-          <Section title="💪 Strong Points" data={result.strong_points} />
-          {mode === 'candidate' && <Section title="⚠️ Weak Points" data={result.weak_points} />}
-          {mode === 'candidate' && <Section title="💡 Improvement Suggestions" data={result.improvement_suggestions} />}
-          {mode === 'company' && result.comparison_score && (
-            <div>
-              <h3 className="font-semibold text-lg">📊 Comparison Score</h3>
-              <p>{result.comparison_score}</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Company Mode Batch Result */}
-      {batchResult && (
-        <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
-          <h2 className="text-3xl font-bold text-gray-800">🏆 Batch Comparison Result</h2>
-          <p className="text-lg"><strong>Best Resume Summary:</strong> {batchResult.best_resume_summary}</p>
-          <h3 className="font-semibold mt-4 text-lg">Rankings:</h3>
-          <ul className="list-decimal pl-6 space-y-2">
-            {batchResult.ranking.map((item, idx) => (
-              <li key={idx} className="text-gray-700">
-                <strong>Rank {item.index + 1} (Score: {item.score}%)</strong>: {item.summary}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {result && <ResultDisplay mode={mode} result={result} />}
+      {batchResult && <BatchResultDisplay batchResult={batchResult} />}
     </div>
   );
 }
 
-// Reusable Section Component
+const ResultDisplay = ({ mode, result }) => (
+  <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
+    <h2 className="text-3xl font-bold text-gray-800">📊 Analysis Result</h2>
+    <p className="text-lg"><strong>Suited for Role:</strong> {result.suited_for_role === 'Yes' ? '✅ Yes' : '❌ No'}</p>
+    <Section title="💪 Strong Points" data={result.strong_points} />
+    {mode === 'candidate' && <Section title="⚠️ Weak Points" data={result.weak_points} />}
+    {mode === 'candidate' && <Section title="💡 Improvement Suggestions" data={result.improvement_suggestions} />}
+    {mode === 'company' && result.comparison_score && (
+      <Section title="📊 Comparison Score" data={[result.comparison_score]} />
+    )}
+  </div>
+);
+
+const BatchResultDisplay = ({ batchResult }) => (
+  <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
+    <h2 className="text-3xl font-bold text-gray-800">🏆 Batch Comparison Result</h2>
+    <p className="text-lg"><strong>Best Resume Summary:</strong> {batchResult.best_resume_summary}</p>
+    <h3 className="font-semibold mt-4 text-lg">Rankings:</h3>
+    <ul className="list-decimal pl-6 space-y-2">
+      {batchResult.ranking.map((item, idx) => (
+        <li key={idx} className="text-gray-700">
+          <strong>Rank {item.index + 1} (Score: {item.score}%)</strong>: {item.summary}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
 const Section = ({ title, data }) => (
   <div>
     <h3 className="font-semibold text-lg">{title}</h3>
     <ul className="list-disc pl-6 space-y-1">
       {data && data.length > 0 ? (
-        data.map((point, idx) => (
-          <li key={idx} className="text-gray-700">{point}</li>
-        ))
+        data.map((point, idx) => <li key={idx} className="text-gray-700">{point}</li>)
       ) : (
         <li className="text-gray-500">No data available.</li>
       )}
