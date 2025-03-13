@@ -8,7 +8,7 @@ export default function BatchCompare() {
   const [loading, setLoading] = useState(false);
 
   // ✅ Correct Backend API Endpoint
-  const API_BASE = "https://ai-backend-mg.up.railway.app";
+  const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
   const handleUpload = async () => {
     if (files.length === 0 || role.trim() === '') {

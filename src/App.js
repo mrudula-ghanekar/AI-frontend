@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './index.css';
 import './App.css';
+import BatchCompare from './BatchCompare';
 
 export default function App() {
   const [mode, setMode] = useState('candidate');
@@ -45,7 +46,7 @@ export default function App() {
       formData.append('role', role);
       console.log("Sending request to:", `${API_BASE_URL}/api/batchResponse`);
 
-      const response = await axios.post(`${API_BASE_URL}/api/batchResponse`, formData);
+      const response = await axios.post(`${API_BASE_URL}/api/batchAnalyze`, formData);
       console.log("Batch Response:", response.data);
       setBatchResult(response.data);
     } catch (error) {
