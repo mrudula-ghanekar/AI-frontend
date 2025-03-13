@@ -25,7 +25,7 @@ export default function App() {
     formData.append('file', file);
     formData.append('role', role);
     formData.append('mode', mode);
-    const res = await axios.post('http://localhost:8080/api/analyze', formData);
+    const response = await axios.post('https://resumehelp-backend-production.up.railway.app/api/analyze', formData);
     setResult((res.data));
   };
 
