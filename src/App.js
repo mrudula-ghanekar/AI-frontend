@@ -10,14 +10,12 @@ function App() {
   const [jobRole, setJobRole] = useState('');
   const [response, setResponse] = useState('');
 
-  const handleModeChange = (newMode) => {
-    setMode(newMode);
+  const handleModeChange = () => {
+    setMode((prevMode) => (prevMode === 'candidate' ? 'company' : 'candidate'));
     setResponse('');
   };
 
-  const handleFileChange = (event) => {
-    setSelectedFile(event.target.files[0]);
-  };
+  const handleFileChange = (event) => setSelectedFile(event.target.files[0]);
 
   const handleReset = () => {
     setSelectedFile(null);
@@ -26,28 +24,21 @@ function App() {
   };
 
   const handleAnalyzeResume = async () => {
-    if (!selectedFile) {
-      alert('Please upload a resume file.');
-      return;
-    }
+    if (!selectedFile) return alert('Please upload a resume file.');
 
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('jobRole', jobRole);
 
     try {
-      let endpoint = mode === 'candidate' ? '/api/analyzeResume' : '/api/batchResponse';
+      const endpoint = mode === 'candidate' ? '/api/analyzeResume' : '/api/batchResponse';
       const res = await axios.post(`${API_BASE_URL}${endpoint}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setResponse(JSON.stringify(res.data, null, 2));
     } catch (error) {
       console.error('Error:', error);
-      setResponse(
-        error.response
-          ? `Error: ${error.response.status} - ${error.response.data.error}`
-          : 'An error occurred while processing the request.'
-      );
+      setResponse('No response from server. Please try again later.');
     }
   };
 
@@ -59,7 +50,7 @@ function App() {
       </h1>
       <h4>AI-Powered Resume Analyzer & Job Match Tool</h4>
 
-      <button className="switch-btn" onClick={() => handleModeChange(mode === 'candidate' ? 'company' : 'candidate')}>
+      <button className="switch-btn" onClick={handleModeChange}>
         Switch to {mode === 'candidate' ? 'Company' : 'Candidate'} Mode
       </button>
 
@@ -75,7 +66,7 @@ function App() {
       </label>
       <input id="file-upload" type="file" onChange={handleFileChange} />
 
-      <div style={{ marginTop: '20px' }}>
+      <div className="button-group">
         <button onClick={handleAnalyzeResume}>Analyze Resume</button>
         <button className="reset-btn" onClick={handleReset}>Reset</button>
       </div>
