@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './index.css';
-import style from './App.css';
-import Home from './Home';
-
+import './App.css';
 
 export default function App() {
   const [mode, setMode] = useState('candidate');
@@ -12,6 +10,8 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [batchResult, setBatchResult] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+  console.log("API Base URL:", API_BASE_URL); // Check if ENV is working
 
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
@@ -22,20 +22,49 @@ export default function App() {
   };
 
   const handleUpload = async () => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('role', role);
-    formData.append('mode', mode);
-    const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
-    setResult((res.data));
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('role', role);
+      formData.append('mode', mode);
+      console.log("Sending request to:", `${API_BASE_URL}/api/analyze`);
+
+      const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
+      console.log("Response:", response.data);
+      setResult(response.data);
+    } catch (error) {
+      console.error("Error during resume analysis:", error);
+      handleError(error);
+    }
   };
 
   const handleBatchCompare = async () => {
-    const formData = new FormData();
-    file.forEach(f => formData.append('files', f));
-    formData.append('role', role);
-    const response = await axios.post(`${API_BASE_URL}/api/batchResponse`, formData);
-    setBatchResult((res.data));
+    try {
+      const formData = new FormData();
+      file.forEach(f => formData.append('files', f));
+      formData.append('role', role);
+      console.log("Sending request to:", `${API_BASE_URL}/api/batchResponse`);
+
+      const response = await axios.post(`${API_BASE_URL}/api/batchResponse`, formData);
+      console.log("Batch Response:", response.data);
+      setBatchResult(response.data);
+    } catch (error) {
+      console.error("Error during batch comparison:", error);
+      handleError(error);
+    }
+  };
+
+  const handleError = (error) => {
+    if (error.response) {
+      console.error("API responded with error:", error.response.data);
+      alert(`Error: ${error.response.data.message || 'Server Error'}`);
+    } else if (error.request) {
+      console.error("No response from API:", error.request);
+      alert("No response from server. Please try again later.");
+    } else {
+      console.error("Request error:", error.message);
+      alert("Error: " + error.message);
+    }
   };
 
   return (
@@ -83,7 +112,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Result Display */}
+      {/* Candidate Mode Result */}
       {result && (
         <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
           <h2 className="text-3xl font-bold text-gray-800">📊 Analysis Result</h2>
@@ -101,7 +130,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Batch Result */}
+      {/* Company Mode Batch Result */}
       {batchResult && (
         <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
           <h2 className="text-3xl font-bold text-gray-800">🏆 Batch Comparison Result</h2>
@@ -120,13 +149,18 @@ export default function App() {
   );
 }
 
+// Reusable Section Component
 const Section = ({ title, data }) => (
   <div>
     <h3 className="font-semibold text-lg">{title}</h3>
     <ul className="list-disc pl-6 space-y-1">
-      {data.map((point, idx) => (
-        <li key={idx} className="text-gray-700">{point}</li>
-      ))}
+      {data && data.length > 0 ? (
+        data.map((point, idx) => (
+          <li key={idx} className="text-gray-700">{point}</li>
+        ))
+      ) : (
+        <li className="text-gray-500">No data available.</li>
+      )}
     </ul>
   </div>
 );
