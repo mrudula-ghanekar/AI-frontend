@@ -46,7 +46,7 @@ export default function App() {
       formData.append('role', role);
       console.log("Sending request to:", `${API_BASE_URL}/api/batchResponse`);
 
-      const response = await axios.post(`${API_BASE_URL}/api/batchAnalyze`, formData);
+      const response = await axios.post(`${API_BASE_URL}/api/batchResponse`, formData);
       console.log("Batch Response:", response.data);
       setBatchResult(response.data);
     } catch (error) {
