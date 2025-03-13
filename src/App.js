@@ -11,8 +11,10 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [batchResult, setBatchResult] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const API_KEY = process.env.REACT_APP_API_KEY; // Loaded API Key from env
 
   console.log("API Base URL:", API_BASE_URL); // Check if ENV is working
+  console.log("API Key Loaded:", API_KEY ? "Yes" : "No"); // Check if key is loaded (no need to print key)
 
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
@@ -30,7 +32,12 @@ export default function App() {
       formData.append('mode', mode);
       console.log("Sending request to:", `${API_BASE_URL}/api/analyze`);
 
-      const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
+      const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData, {
+        headers: {
+          'Authorization': `Bearer ${API_KEY}`, // Add API Key here
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       console.log("Response:", response.data);
       setResult(response.data);
     } catch (error) {
@@ -46,7 +53,12 @@ export default function App() {
       formData.append('role', role);
       console.log("Sending request to:", `${API_BASE_URL}/api/batchResponse`);
 
-      const response = await axios.post(`${API_BASE_URL}/api/batchResponse`, formData);
+      const response = await axios.post(`${API_BASE_URL}/api/batchResponse`, formData, {
+        headers: {
+          'Authorization': `Bearer ${API_KEY}`, // Add API Key here
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       console.log("Batch Response:", response.data);
       setBatchResult(response.data);
     } catch (error) {
