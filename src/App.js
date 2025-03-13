@@ -11,6 +11,7 @@ export default function App() {
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
   const [batchResult, setBatchResult] = useState(null);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
@@ -25,7 +26,7 @@ export default function App() {
     formData.append('file', file);
     formData.append('role', role);
     formData.append('mode', mode);
-    const response = await axios.post('https://resumehelp-backend-production.up.railway.app/api/analyze', formData);
+    const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
     setResult((res.data));
   };
 
@@ -33,7 +34,7 @@ export default function App() {
     const formData = new FormData();
     file.forEach(f => formData.append('files', f));
     formData.append('role', role);
-    const batchResponse = await axios.post('https://resumehelp-backend-production.up.railway.app/api/compare-batch', formData);
+    const response = await axios.post(`${API_BASE_URL}/api/batchResponse`, formData);
     setBatchResult((res.data));
   };
 
