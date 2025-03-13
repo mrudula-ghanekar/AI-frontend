@@ -19,6 +19,12 @@ function App() {
     setSelectedFile(event.target.files[0]);
   };
 
+  const handleReset = () => {
+    setSelectedFile(null);
+    setJobRole('');
+    setResponse('');
+  };
+
   const handleAnalyzeResume = async () => {
     if (!selectedFile) {
       alert('Please upload a resume file.');
@@ -37,35 +43,42 @@ function App() {
       setResponse(JSON.stringify(res.data, null, 2));
     } catch (error) {
       console.error('Error:', error);
-      setResponse(error.response ? `Error: ${error.response.status} - ${error.response.data.error}` : 'An error occurred while processing the request.');
+      setResponse(
+        error.response
+          ? `Error: ${error.response.status} - ${error.response.data.error}`
+          : 'An error occurred while processing the request.'
+      );
     }
   };
 
   return (
     <div className="App">
-      <h1>ResumeHelp AI</h1>
+      <h1>
+        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Rocket" width="35" />
+        ResumeHelp AI
+      </h1>
+      <h4>AI-Powered Resume Analyzer & Job Match Tool</h4>
 
-      <div className="mode-toggle">
-        <button className={mode === 'candidate' ? 'active' : ''} onClick={() => handleModeChange('candidate')}>Candidate Mode</button>
-        <button className={mode === 'company' ? 'active' : ''} onClick={() => handleModeChange('company')}>Company Mode</button>
-      </div>
-
-      <div className="upload-box">
-        <label htmlFor="file-upload" className="custom-file-upload">
-          {selectedFile ? selectedFile.name : 'Click or Drag & Drop to upload Resume'}
-        </label>
-        <input id="file-upload" type="file" onChange={handleFileChange} />
-      </div>
+      <button className="switch-btn" onClick={() => handleModeChange(mode === 'candidate' ? 'company' : 'candidate')}>
+        Switch to {mode === 'candidate' ? 'Company' : 'Candidate'} Mode
+      </button>
 
       <input
         type="text"
-        placeholder="Enter Job Role (e.g., Software Engineer)"
+        placeholder="Job Role (e.g., Software Engineer)"
         value={jobRole}
         onChange={(e) => setJobRole(e.target.value)}
-        className="job-role-input"
       />
 
-      <button onClick={handleAnalyzeResume} className="analyze-btn">Analyze Resume</button>
+      <label htmlFor="file-upload" className="file-label">
+        {selectedFile ? selectedFile.name : 'Choose File'}
+      </label>
+      <input id="file-upload" type="file" onChange={handleFileChange} />
+
+      <div style={{ marginTop: '20px' }}>
+        <button onClick={handleAnalyzeResume}>Analyze Resume</button>
+        <button className="reset-btn" onClick={handleReset}>Reset</button>
+      </div>
 
       {response && (
         <div className="response-box">
