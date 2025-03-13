@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './App.css'; // Make sure this import is present and file is correct
+import './App.css';
 
 const API_BASE_URL = 'https://ai-backend-mg.up.railway.app';
 
@@ -12,7 +12,7 @@ function App() {
 
   const handleModeChange = (newMode) => {
     setMode(newMode);
-    setResponse(''); // Clear previous response when switching modes
+    setResponse('');
   };
 
   const handleFileChange = (event) => {
@@ -31,47 +31,44 @@ function App() {
 
     try {
       let endpoint = mode === 'candidate' ? '/api/analyzeResume' : '/api/batchResponse';
-      const response = await axios.post(`${API_BASE_URL}${endpoint}`, formData, {
+      const res = await axios.post(`${API_BASE_URL}${endpoint}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      setResponse(JSON.stringify(response.data, null, 2));
+      setResponse(JSON.stringify(res.data, null, 2));
     } catch (error) {
       console.error('Error:', error);
-      if (error.response) {
-        setResponse(`Error: ${error.response.status} - ${error.response.data.error}`);
-      } else {
-        setResponse('An error occurred while processing the request.');
-      }
+      setResponse(error.response ? `Error: ${error.response.status} - ${error.response.data.error}` : 'An error occurred while processing the request.');
     }
   };
 
   return (
     <div className="App">
       <h1>ResumeHelp AI</h1>
+
       <div className="mode-toggle">
-        <button onClick={() => handleModeChange('candidate')} className={mode === 'candidate' ? 'active' : ''}>
-          Candidate Mode
-        </button>
-        <button onClick={() => handleModeChange('company')} className={mode === 'company' ? 'active' : ''}>
-          Company Mode
-        </button>
+        <button className={mode === 'candidate' ? 'active' : ''} onClick={() => handleModeChange('candidate')}>Candidate Mode</button>
+        <button className={mode === 'company' ? 'active' : ''} onClick={() => handleModeChange('company')}>Company Mode</button>
       </div>
-      <div className="upload-section">
-        <label>Select Resume </label>
-        <input type="file" onChange={handleFileChange} />
+
+      <div className="upload-box">
+        <label htmlFor="file-upload" className="custom-file-upload">
+          {selectedFile ? selectedFile.name : 'Click or Drag & Drop to upload Resume'}
+        </label>
+        <input id="file-upload" type="file" onChange={handleFileChange} />
       </div>
-      <div className="input-section">
-        <label>Enter Job Role </label>
-        <input
-          type="text"
-          value={jobRole}
-          onChange={(e) => setJobRole(e.target.value)}
-          placeholder="e.g., Software Engineer"
-        />
-      </div>
-      <button className="analyze-btn" onClick={handleAnalyzeResume}>Analyze Resume</button>
+
+      <input
+        type="text"
+        placeholder="Enter Job Role (e.g., Software Engineer)"
+        value={jobRole}
+        onChange={(e) => setJobRole(e.target.value)}
+        className="job-role-input"
+      />
+
+      <button onClick={handleAnalyzeResume} className="analyze-btn">Analyze Resume</button>
+
       {response && (
-        <div className="response-section">
+        <div className="response-box">
           <h2>Analysis Result:</h2>
           <pre>{response}</pre>
         </div>

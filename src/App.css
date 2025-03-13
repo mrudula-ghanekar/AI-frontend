@@ -1,71 +1,120 @@
-.App {
+body {
+  margin: 0;
   font-family: 'Arial', sans-serif;
+  background: #f4f4f8;
+}
+
+.App {
+  max-width: 700px;
+  margin: 50px auto;
   text-align: center;
   padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
+  margin-bottom: 30px;
   color: #333;
 }
 
+.mode-toggle {
+  margin-bottom: 20px;
+}
+
 .mode-toggle button {
-  padding: 10px 20px;
-  margin: 10px 5px;
-  border: 1px solid #007bff;
-  background-color: white;
+  padding: 12px 25px;
+  margin: 0 10px;
+  border: 2px solid #007bff;
+  background: white;
   color: #007bff;
+  border-radius: 30px;
   cursor: pointer;
-  border-radius: 5px;
-  transition: all 0.3s ease;
+  transition: 0.3s ease;
+  font-weight: bold;
 }
 
 .mode-toggle .active {
-  background-color: #007bff;
+  background: #007bff;
   color: white;
 }
 
-.upload-section, .input-section {
+.upload-box {
+  border: 2px dashed #ccc;
+  padding: 40px 20px;
   margin: 20px 0;
+  border-radius: 12px;
+  background: #fafafa;
+  transition: 0.3s ease;
+}
+
+.upload-box:hover {
+  border-color: #007bff;
+  background: #f0f8ff;
+}
+
+.custom-file-upload {
+  cursor: pointer;
+  color: #555;
+  font-weight: bold;
 }
 
 input[type="file"] {
-  margin-left: 10px;
+  display: none;
 }
 
-input[type="text"] {
-  padding: 8px;
-  width: 250px;
-  margin-left: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.job-role-input {
+  width: 90%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  transition: 0.3s;
+  font-size: 16px;
+}
+
+.job-role-input:focus {
+  border-color: #007bff;
+  outline: none;
 }
 
 .analyze-btn {
-  padding: 10px 30px;
-  background-color: #28a745;
+  padding: 14px 40px;
+  background: #28a745;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 30px;
+  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: 0.3s;
+  margin-bottom: 20px;
 }
 
 .analyze-btn:hover {
-  background-color: #218838;
+  background: #218838;
 }
 
-.response-section {
-  text-align: left;
-  margin: 30px auto;
-  width: 80%;
-  max-width: 800px;
-  background-color: #f9f9f9;
+.response-box {
+  margin-top: 30px;
   padding: 20px;
+  text-align: left;
+  background: #f8f9fa;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-height: 400px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.response-box h2 {
+  margin-top: 0;
+  color: #333;
 }
 
 pre {
-  white-space: pre-wrap;
-  word-wrap: break-word;
+  margin: 0;
+  color: #444;
+  font-size: 14px;
 }
