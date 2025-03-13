@@ -1,166 +1,159 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './index.css';
-import './App.css';
 
-export default function App() {
+const API_BASE_URL = 'https://ai-backend-mg.up.railway.app';
+console.log('API Base URL:', API_BASE_URL);
+
+function App() {
   const [mode, setMode] = useState('candidate');
-  const [role, setRole] = useState('');
   const [file, setFile] = useState(null);
+  const [role, setRole] = useState('');
   const [result, setResult] = useState(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [batchResult, setBatchResult] = useState(null);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  console.log("API Base URL:", API_BASE_URL); // Check if ENV is working
-
-  const handleModeToggle = () => {
-    setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
-    setResult(null);
-    setBatchResult(null);
-    setFile(null);
-    setRole('');
+  const handleFileChange = (e) => {
+    setFile(e.target.files.length > 1 ? Array.from(e.target.files) : e.target.files[0]);
   };
 
-  const handleUpload = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('role', role);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('role', role);
-      formData.append('mode', mode);
-      console.log("Sending request to:", `${API_BASE_URL}/api/analyze`);
-
-      const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
-      console.log("Response:", response.data);
-      setResult(response.data);
-    } catch (error) {
-      console.error("Error during resume analysis:", error);
-      handleError(error);
+      const res = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
+      console.log('API Response:', res.data);
+      setResult(res.data);
+      setError('');
+    } catch (err) {
+      console.error('API Error:', err);
+      setError(err.response?.data?.error || 'An error occurred while processing your request.');
+      setResult(null);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleBatchCompare = async () => {
+    setLoading(true);
+    const formData = new FormData();
+    file.forEach(f => formData.append('files', f));
+    formData.append('role', role);
     try {
-      const formData = new FormData();
-      file.forEach(f => formData.append('files', f));
-      formData.append('role', role);
-      console.log("Sending request to:", `${API_BASE_URL}/api/batchResponse`);
-
-      const response = await axios.post(`${API_BASE_URL}/api/batchResponse`, formData);
-      console.log("Batch Response:", response.data);
-      setBatchResult(response.data);
-    } catch (error) {
-      console.error("Error during batch comparison:", error);
-      handleError(error);
-    }
-  };
-
-  const handleError = (error) => {
-    if (error.response) {
-      console.error("API responded with error:", error.response.data);
-      alert(`Error: ${error.response.data.message || 'Server Error'}`);
-    } else if (error.request) {
-      console.error("No response from API:", error.request);
-      alert("No response from server. Please try again later.");
-    } else {
-      console.error("Request error:", error.message);
-      alert("Error: " + error.message);
+      const res = await axios.post(`${API_BASE_URL}/api/batchAnalyze`, formData); // ✅ Correct endpoint
+      console.log('Batch Response from server:', res.data);
+      setBatchResult(res.data);
+      setError('');
+    } catch (err) {
+      console.error('Batch Error from server:', err);
+      setError(err.response?.data?.error || 'An error occurred during batch comparison.');
+      setBatchResult(null);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-blue-100 flex flex-col items-center py-10 px-6">
-      <h1 className="text-5xl font-extrabold text-gray-800 mb-4">🚀 ResumeHelp AI</h1>
-      <p className="text-lg text-gray-700 mb-8 text-center">AI-Powered Resume Analyzer & Job Match Tool</p>
-
-      {/* Mode Switch */}
-      <button
-        onClick={handleModeToggle}
-        className="bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-indigo-700 transition mb-6"
-      >
-        Switch to {mode === 'candidate' ? 'Company' : 'Candidate'} Mode
-      </button>
-
-      {/* Upload Section */}
-      <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-3xl space-y-6">
-        <input
-          type="text"
-          placeholder="Enter Role (e.g., Data Scientist)"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-400 outline-none"
-        />
-        <input
-          type="file"
-          onChange={(e) => setFile(mode === 'candidate' ? e.target.files[0] : Array.from(e.target.files))}
-          multiple={mode === 'company'}
-          className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-400 outline-none"
-        />
-
-        <div className="flex gap-4">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+      <div className="max-w-3xl w-full bg-white p-6 rounded-lg shadow-md">
+        <h1 className="text-2xl font-bold mb-4 text-center">ResumeHelp AI</h1>
+        <div className="flex justify-center space-x-4 mb-6">
           <button
-            onClick={mode === 'candidate' ? handleUpload : handleBatchCompare}
-            className="bg-green-500 text-white px-6 py-3 rounded-lg w-full hover:bg-green-600 transition"
+            className={`px-4 py-2 rounded ${mode === 'candidate' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            onClick={() => { setMode('candidate'); setResult(null); setBatchResult(null); setError(''); }}
           >
-            {mode === 'candidate' ? 'Analyze Resume' : 'Compare Batch'}
+            Candidate Mode
           </button>
           <button
-            onClick={() => { setFile(null); setRole(''); setResult(null); setBatchResult(null); }}
-            className="bg-red-500 text-white px-6 py-3 rounded-lg w-full hover:bg-red-600 transition"
+            className={`px-4 py-2 rounded ${mode === 'company' ? 'bg-green-500 text-white' : 'bg-gray-200'}`}
+            onClick={() => { setMode('company'); setResult(null); setBatchResult(null); setError(''); }}
           >
-            Reset
+            Company Mode
           </button>
         </div>
-      </div>
-
-      {/* Candidate Mode Result */}
-      {result && (
-        <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
-          <h2 className="text-3xl font-bold text-gray-800">📊 Analysis Result</h2>
-          <p className="text-lg"><strong>Suited for Role:</strong> {result.suited_for_role === 'Yes' ? '✅ Yes' : '❌ No'}</p>
-
-          <Section title="💪 Strong Points" data={result.strong_points} />
-          {mode === 'candidate' && <Section title="⚠️ Weak Points" data={result.weak_points} />}
-          {mode === 'candidate' && <Section title="💡 Improvement Suggestions" data={result.improvement_suggestions} />}
-          {mode === 'company' && result.comparison_score && (
-            <div>
-              <h3 className="font-semibold text-lg">📊 Comparison Score</h3>
-              <p>{result.comparison_score}</p>
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block mb-1">Select {mode === 'candidate' ? 'Resume' : 'Resumes (multiple allowed)'}</label>
+            <input
+              type="file"
+              onChange={handleFileChange}
+              multiple={mode === 'company'}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label className="block mb-1">Enter Job Role</label>
+            <input
+              type="text"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full border p-2 rounded"
+              placeholder="e.g., Software Engineer"
+            />
+          </div>
+          {mode === 'candidate' ? (
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-500 text-white py-2 rounded"
+            >
+              {loading ? 'Analyzing...' : 'Analyze Resume'}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleBatchCompare}
+              disabled={loading}
+              className="w-full bg-green-500 text-white py-2 rounded"
+            >
+              {loading ? 'Comparing...' : 'Compare Resumes'}
+            </button>
           )}
-        </div>
-      )}
-
-      {/* Company Mode Batch Result */}
-      {batchResult && (
-        <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
-          <h2 className="text-3xl font-bold text-gray-800">🏆 Batch Comparison Result</h2>
-          <p className="text-lg"><strong>Best Resume Summary:</strong> {batchResult.best_resume_summary}</p>
-          <h3 className="font-semibold mt-4 text-lg">Rankings:</h3>
-          <ul className="list-decimal pl-6 space-y-2">
-            {batchResult.ranking.map((item, idx) => (
-              <li key={idx} className="text-gray-700">
-                <strong>Rank {item.index + 1} (Score: {item.score}%)</strong>: {item.summary}
-              </li>
+        </form>
+        {error && <div className="mt-4 text-red-500">{error}</div>}
+        {result && mode === 'candidate' && (
+          <div className="mt-6">
+            <h2 className="text-xl font-semibold mb-2">Analysis Result</h2>
+            <div className="bg-gray-50 p-4 rounded shadow">
+              <h3 className="font-semibold">Skills Match:</h3>
+              <p>{result.skillsMatch}</p>
+              <h3 className="font-semibold mt-2">Formatting Suggestions:</h3>
+              <p>{result.formattingSuggestions}</p>
+              <h3 className="font-semibold mt-2">Grammar Check:</h3>
+              <p>{result.grammarCheck}</p>
+              <h3 className="font-semibold mt-2">Improvements:</h3>
+              <p>{result.improvements}</p>
+              <h3 className="font-semibold mt-2">Download Improved Resume:</h3>
+              <a
+                href={`data:application/pdf;base64,${result.improvedResume}`}
+                download="Improved_Resume.pdf"
+                className="text-blue-500 underline"
+              >
+                Download PDF
+              </a>
+            </div>
+          </div>
+        )}
+        {batchResult && mode === 'company' && (
+          <div className="mt-6">
+            <h2 className="text-xl font-semibold mb-2">Batch Comparison Result</h2>
+            {batchResult.map((item, index) => (
+              <div key={index} className="bg-gray-50 p-4 rounded shadow mb-4">
+                <h3 className="font-semibold">Candidate {index + 1}:</h3>
+                <p><strong>Skills Match:</strong> {item.skillsMatch}</p>
+                <p><strong>Formatting:</strong> {item.formatting}</p>
+                <p><strong>Grammar:</strong> {item.grammar}</p>
+                <p><strong>Overall Score:</strong> {item.overallScore}</p>
+              </div>
             ))}
-          </ul>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
-// Reusable Section Component
-const Section = ({ title, data }) => (
-  <div>
-    <h3 className="font-semibold text-lg">{title}</h3>
-    <ul className="list-disc pl-6 space-y-1">
-      {data && data.length > 0 ? (
-        data.map((point, idx) => (
-          <li key={idx} className="text-gray-700">{point}</li>
-        ))
-      ) : (
-        <li className="text-gray-500">No data available.</li>
-      )}
-    </ul>
-  </div>
-);
+export default App;
