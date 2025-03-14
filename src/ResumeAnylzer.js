@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const API_BASE_URL = 'https://your-backend-url.com'; // ✅ Replace with actual backend URL (Railway hosted)
+const API_BASE_URL = 'https://ai-backend-mg.up.railway.app'; // ✅ Replace with actual backend URL (Railway hosted)
 
 const ResumeAnalyzer = () => {
   const [file, setFile] = useState(null);
