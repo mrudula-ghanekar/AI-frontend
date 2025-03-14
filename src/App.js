@@ -31,7 +31,7 @@ export default function App() {
       formData.append('mode', mode);
 
       const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
-      setResult(JSON.parse(response.data)); // Parsing stringified JSON response
+      setResult((response.data)); // Parsing stringified JSON response
     } catch (error) {
       handleError(error);
     }
@@ -48,7 +48,7 @@ export default function App() {
       formData.append('role', role);
 
       const response = await axios.post(`${API_BASE_URL}/api/compare-batch`, formData);
-      setBatchResult(JSON.parse(response.data)); // Parsing stringified JSON response
+      setBatchResult((response.data)); // Parsing stringified JSON response
     } catch (error) {
       handleError(error);
     }
