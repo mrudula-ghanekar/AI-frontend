@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './index.css';
+impot './.App.css';
 
 export default function App() {
   const [mode, setMode] = useState('candidate');
