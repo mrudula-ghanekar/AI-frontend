@@ -1,164 +1,93 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './index.css';
-import './App.css';
 
-export default function App() {
-  const [mode, setMode] = useState('candidate');
-  const [role, setRole] = useState('');
+const API_BASE_URL = 'https://your-backend-url.com'; // ✅ Replace with actual backend URL (Railway hosted)
+
+const ResumeAnalyzer = () => {
   const [file, setFile] = useState(null);
-  const [result, setResult] = useState(null);
-  const [batchResult, setBatchResult] = useState(null);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const [role, setRole] = useState('');
+  const [mode, setMode] = useState('candidate'); // Default to candidate mode
+  const [result, setResult] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleModeToggle = () => {
-    setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
-    setResult(null);
-    setBatchResult(null);
-    setFile(null);
-    setRole('');
-  };
-
-  const handleUpload = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!file || !role) {
-      alert("Please provide both file and role.");
+      setError('Please select a file and specify a role.');
       return;
     }
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('role', role);
-      formData.append('mode', mode);
 
-      const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
-      console.log("Response:", response.data);
+    setLoading(true);
+    setError('');
+    setResult('');
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('role', role);
+    formData.append('mode', mode);
+
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       setResult(response.data);
-    } catch (error) {
-      console.error("Error during resume analysis:", error);
-      handleError(error);
-    }
-  };
-
-  // ✅ Corrected API URL here
-  const handleBatchCompare = async () => {
-    if (!file || !role) {
-      alert("Please upload files and enter role.");
-      return;
-    }
-    try {
-      const formData = new FormData();
-      file.forEach(f => formData.append('files', f)); // Backend expects 'files' (List<MultipartFile>)
-      formData.append('role', role);
-
-      // ✅ Corrected endpoint for batch comparison
-      const response = await axios.post(`${API_BASE_URL}/api/compare-batch`, formData);
-      console.log("Batch Response:", response.data);
-      setBatchResult(response.data);
-    } catch (error) {
-      console.error("Error during batch comparison:", error);
-      handleError(error);
-    }
-  };
-
-  const handleError = (error) => {
-    if (error.response) {
-      console.error("API responded with error:", error.response.data);
-      alert(`Error: ${error.response.data.message || 'Server Error'}`);
-    } else if (error.request) {
-      console.error("No response from API:", error.request);
-      alert("No response from server. Please try again later.");
-    } else {
-      console.error("Request error:", error.message);
-      alert("Error: " + error.message);
+    } catch (err) {
+      setError('Failed to analyze resume. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-blue-100 flex flex-col items-center py-10 px-6">
-      <h1 className="text-5xl font-extrabold text-gray-800 mb-4">🚀 ResumeHelp AI</h1>
-      <p className="text-lg text-gray-700 mb-8 text-center">AI-Powered Resume Analyzer & Job Match Tool</p>
+    <div className="max-w-xl mx-auto p-6 bg-white shadow rounded-lg">
+      <h2 className="text-xl font-bold mb-4">Resume Analyzer</h2>
 
-      <button
-        onClick={handleModeToggle}
-        className="bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-indigo-700 transition mb-6"
-      >
-        Switch to {mode === 'candidate' ? 'Company' : 'Candidate'} Mode
-      </button>
-
-      <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-3xl space-y-6">
-        <input
-          type="text"
-          placeholder="Enter Role (e.g., Data Scientist)"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-400 outline-none"
-        />
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="file"
-          onChange={(e) => setFile(mode === 'candidate' ? e.target.files[0] : Array.from(e.target.files))}
-          multiple={mode === 'company'}
-          className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-400 outline-none"
+          accept="application/pdf"
+          onChange={(e) => setFile(e.target.files[0])}
+          className="w-full border p-2 rounded"
         />
 
-        <div className="flex gap-4">
-          <button
-            onClick={mode === 'candidate' ? handleUpload : handleBatchCompare}
-            className="bg-green-500 text-white px-6 py-3 rounded-lg w-full hover:bg-green-600 transition"
-          >
-            {mode === 'candidate' ? 'Analyze Resume' : 'Compare Batch'}
-          </button>
-          <button
-            onClick={() => { setFile(null); setRole(''); setResult(null); setBatchResult(null); }}
-            className="bg-red-500 text-white px-6 py-3 rounded-lg w-full hover:bg-red-600 transition"
-          >
-            Reset
-          </button>
-        </div>
-      </div>
+        <input
+          type="text"
+          placeholder="Enter Role (e.g., Backend Developer)"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          className="w-full border p-2 rounded"
+        />
 
-      {result && <ResultDisplay mode={mode} result={result} />}
-      {batchResult && <BatchResultDisplay batchResult={batchResult} />}
+        <select
+          value={mode}
+          onChange={(e) => setMode(e.target.value)}
+          className="w-full border p-2 rounded"
+        >
+          <option value="candidate">Candidate Mode</option>
+          <option value="company">Company Mode</option>
+        </select>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          disabled={loading}
+        >
+          {loading ? 'Analyzing...' : 'Analyze Resume'}
+        </button>
+      </form>
+
+      {error && <p className="text-red-500 mt-4">{error}</p>}
+      {result && (
+        <div className="mt-4 p-4 bg-gray-100 rounded">
+          <h3 className="font-bold mb-2">Analysis Result:</h3>
+          <pre className="whitespace-pre-wrap">{result}</pre>
+        </div>
+      )}
     </div>
   );
-}
+};
 
-const ResultDisplay = ({ mode, result }) => (
-  <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
-    <h2 className="text-3xl font-bold text-gray-800">📊 Analysis Result</h2>
-    <p className="text-lg"><strong>Suited for Role:</strong> {result.suited_for_role === 'Yes' ? '✅ Yes' : '❌ No'}</p>
-    <Section title="💪 Strong Points" data={result.strong_points} />
-    {mode === 'candidate' && <Section title="⚠️ Weak Points" data={result.weak_points} />}
-    {mode === 'candidate' && <Section title="💡 Improvement Suggestions" data={result.improvement_suggestions} />}
-    {mode === 'company' && result.comparison_score && (
-      <Section title="📊 Comparison Score" data={[result.comparison_score]} />
-    )}
-  </div>
-);
-
-const BatchResultDisplay = ({ batchResult }) => (
-  <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
-    <h2 className="text-3xl font-bold text-gray-800">🏆 Batch Comparison Result</h2>
-    <p className="text-lg"><strong>Best Resume Summary:</strong> {batchResult.best_resume_summary}</p>
-    <h3 className="font-semibold mt-4 text-lg">Rankings:</h3>
-    <ul className="list-decimal pl-6 space-y-2">
-      {batchResult.ranking.map((item, idx) => (
-        <li key={idx} className="text-gray-700">
-          <strong>Rank {item.index + 1} (Score: {item.score}%)</strong>: {item.summary}
-        </li>
-      ))}
-    </ul>
-  </div>
-);
-
-const Section = ({ title, data }) => (
-  <div>
-    <h3 className="font-semibold text-lg">{title}</h3>
-    <ul className="list-disc pl-6 space-y-1">
-      {data && data.length > 0 ? (
-        data.map((point, idx) => <li key={idx} className="text-gray-700">{point}</li>)
-      ) : (
-        <li className="text-gray-500">No data available.</li>
-      )}
-    </ul>
-  </div>
-);
+export default ResumeAnalyzer;
