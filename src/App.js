@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './index.css';
-import './App.css';
 
 export default function App() {
   const [mode, setMode] = useState('candidate');
@@ -31,15 +30,12 @@ export default function App() {
       formData.append('mode', mode);
 
       const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
-      console.log("Response:", response.data);
       setResult(response.data);
     } catch (error) {
-      console.error("Error during resume analysis:", error);
       handleError(error);
     }
   };
 
-  // ✅ Corrected API URL here
   const handleBatchCompare = async () => {
     if (!file || !role) {
       alert("Please upload files and enter role.");
@@ -47,30 +43,20 @@ export default function App() {
     }
     try {
       const formData = new FormData();
-      file.forEach(f => formData.append('files', f)); // Backend expects 'files' (List<MultipartFile>)
+      file.forEach(f => formData.append('files', f));
       formData.append('role', role);
 
-      // ✅ Corrected endpoint for batch comparison
       const response = await axios.post(`${API_BASE_URL}/api/compare-batch`, formData);
-      console.log("Batch Response:", response.data);
       setBatchResult(response.data);
     } catch (error) {
-      console.error("Error during batch comparison:", error);
       handleError(error);
     }
   };
 
   const handleError = (error) => {
-    if (error.response) {
-      console.error("API responded with error:", error.response.data);
-      alert(`Error: ${error.response.data.message || 'Server Error'}`);
-    } else if (error.request) {
-      console.error("No response from API:", error.request);
-      alert("No response from server. Please try again later.");
-    } else {
-      console.error("Request error:", error.message);
-      alert("Error: " + error.message);
-    }
+    if (error.response) alert(`Error: ${error.response.data.message || 'Server Error'}`);
+    else if (error.request) alert("No response from server.");
+    else alert("Error: " + error.message);
   };
 
   return (
@@ -125,40 +111,13 @@ export default function App() {
 const ResultDisplay = ({ mode, result }) => (
   <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
     <h2 className="text-3xl font-bold text-gray-800">📊 Analysis Result</h2>
-    <p className="text-lg"><strong>Suited for Role:</strong> {result.suited_for_role === 'Yes' ? '✅ Yes' : '❌ No'}</p>
-    <Section title="💪 Strong Points" data={result.strong_points} />
-    {mode === 'candidate' && <Section title="⚠️ Weak Points" data={result.weak_points} />}
-    {mode === 'candidate' && <Section title="💡 Improvement Suggestions" data={result.improvement_suggestions} />}
-    {mode === 'company' && result.comparison_score && (
-      <Section title="📊 Comparison Score" data={[result.comparison_score]} />
-    )}
+    <p><strong>Suited for Role:</strong> {result.suited_for_role === 'Yes' ? '✅ Yes' : '❌ No'}</p>
   </div>
 );
 
 const BatchResultDisplay = ({ batchResult }) => (
   <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
     <h2 className="text-3xl font-bold text-gray-800">🏆 Batch Comparison Result</h2>
-    <p className="text-lg"><strong>Best Resume Summary:</strong> {batchResult.best_resume_summary}</p>
-    <h3 className="font-semibold mt-4 text-lg">Rankings:</h3>
-    <ul className="list-decimal pl-6 space-y-2">
-      {batchResult.ranking.map((item, idx) => (
-        <li key={idx} className="text-gray-700">
-          <strong>Rank {item.index + 1} (Score: {item.score}%)</strong>: {item.summary}
-        </li>
-      ))}
-    </ul>
-  </div>
-);
-
-const Section = ({ title, data }) => (
-  <div>
-    <h3 className="font-semibold text-lg">{title}</h3>
-    <ul className="list-disc pl-6 space-y-1">
-      {data && data.length > 0 ? (
-        data.map((point, idx) => <li key={idx} className="text-gray-700">{point}</li>)
-      ) : (
-        <li className="text-gray-500">No data available.</li>
-      )}
-    </ul>
+    <p><strong>Best Resume Summary:</strong> {batchResult.best_resume_summary}</p>
   </div>
 );
