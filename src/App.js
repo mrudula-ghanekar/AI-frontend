@@ -31,7 +31,7 @@ export default function App() {
       formData.append('mode', mode);
 
       const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
-      setResult((response.data)); // Parsing stringified JSON response
+      setResult(response.data || {});
     } catch (error) {
       handleError(error);
     }
@@ -48,7 +48,7 @@ export default function App() {
       formData.append('role', role);
 
       const response = await axios.post(`${API_BASE_URL}/api/compare-batch`, formData);
-      setBatchResult((response.data)); // Parsing stringified JSON response
+      setBatchResult(response.data || {});
     } catch (error) {
       handleError(error);
     }
@@ -109,42 +109,43 @@ export default function App() {
   );
 }
 
-// ✅ Candidate Mode Result Display
 const ResultDisplay = ({ mode, result }) => (
   <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
     <h2 className="text-3xl font-bold text-gray-800">📊 Analysis Result</h2>
-    <p><strong>Suited for Role:</strong> {result.suited_for_role === 'Yes' ? '✅ Yes' : '❌ No'}</p>
-    <Section title="💪 Strong Points" data={result.strong_points} />
-    <Section title="⚠️ Weak Points" data={result.weak_points} />
-    <Section title="💡 Improvement Suggestions" data={result.improvement_suggestions} />
-    {mode === 'company' && result.comparison_score && (
+    <p><strong>Suited for Role:</strong> {result?.suited_for_role === 'Yes' ? '✅ Yes' : '❌ No'}</p>
+    <Section title="💪 Strong Points" data={result?.strong_points || []} />
+    <Section title="⚠️ Weak Points" data={result?.weak_points || []} />
+    <Section title="💡 Improvement Suggestions" data={result?.improvement_suggestions || []} />
+    {mode === 'company' && result?.comparison_score && (
       <Section title="📊 Comparison Score" data={[result.comparison_score]} />
     )}
   </div>
 );
 
-// ✅ Company Mode Batch Result Display
 const BatchResultDisplay = ({ batchResult }) => (
   <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
     <h2 className="text-3xl font-bold text-gray-800">🏆 Batch Comparison Result</h2>
-    <p><strong>Best Resume Summary:</strong> {batchResult.best_resume_summary}</p>
+    <p><strong>Best Resume Summary:</strong> {batchResult?.best_resume_summary || 'N/A'}</p>
     <h3 className="font-semibold mt-4 text-lg">Rankings:</h3>
     <ul className="list-decimal pl-6 space-y-2">
-      {batchResult.ranking.map((item, idx) => (
-        <li key={idx} className="text-gray-700">
-          <strong>Rank {item.index + 1} (Score: {item.score}%)</strong>: {item.summary}
-        </li>
-      ))}
+      {batchResult?.ranking?.length > 0 ? (
+        batchResult.ranking.map((item, idx) => (
+          <li key={idx} className="text-gray-700">
+            <strong>Rank {item.index + 1} (Score: {item.score}%)</strong>: {item.summary}
+          </li>
+        ))
+      ) : (
+        <li className="text-gray-500">No ranking data available.</li>
+      )}
     </ul>
   </div>
 );
 
-// ✅ Reusable Section Component
 const Section = ({ title, data }) => (
   <div>
     <h3 className="font-semibold text-lg">{title}</h3>
     <ul className="list-disc pl-6 space-y-1">
-      {data && data.length > 0 ? (
+      {data.length > 0 ? (
         data.map((point, idx) => <li key={idx}>{point}</li>)
       ) : (
         <li className="text-gray-500">No data available.</li>
