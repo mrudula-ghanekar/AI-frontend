@@ -114,7 +114,6 @@ const ResultDisplay = ({ mode, result }) => (
     <h2 className="text-3xl font-bold text-gray-800">📊 Analysis Result</h2>
     <p><strong>Suited for Role:</strong> {result?.suited_for_role === 'Yes' ? '✅ Yes' : '❌ No'}</p>
     <Section title="💪 Strong Points" data={result?.strong_points || []} />
-    <Section title="⚠️ Weak Points" data={result?.weak_points || []} />
     <Section title="💡 Improvement Suggestions" data={result?.improvement_suggestions || []} />
     {mode === 'company' && result?.comparison_score && (
       <Section title="📊 Comparison Score" data={[result.comparison_score]} />
