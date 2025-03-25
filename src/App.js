@@ -136,11 +136,13 @@ const BatchResultDisplay = ({ batchResult }) => (
     <ul className="ranking-list">
       {batchResult?.ranking?.length > 0 ? (
         batchResult.ranking.map((item, idx) => {
-          // ✅ Ensure name is extracted properly, fallback to file name if missing
-          const candidateName = item.candidate_name && item.candidate_name !== "undefined"
+          // ✅ Ensure correct fallback when AI misses the name
+          const candidateName = item.candidate_name && item.candidate_name !== "Unknown Candidate"
             ? item.candidate_name
             : "Unnamed Candidate";
-          const fileName = item.file_name ? `(${item.file_name})` : "(Unknown File)";
+          const fileName = item.file_name && item.file_name !== "Unknown File"
+            ? `(${item.file_name})`
+            : "(Unknown File)";
 
           return (
             <li key={idx} className="ranking-item">
