@@ -29,31 +29,39 @@ export default function App() {
 
   const handleUpload = async () => {
     if (!files.length || !role) {
-      setError("Please provide both file(s) and role.");
+      setError("⚠️ Please provide both file(s) and role.");
       return;
     }
     setLoading(true);
     setError(null);
+  
     try {
       const formData = new FormData();
-      files.forEach(file => formData.append('files', file));
-      formData.append('role', role);
-      formData.append('mode', mode);
-      
+
+      if (mode === "company") {
+        files.forEach(file => formData.append("files", file)); // ✅ Use "files" for Company Mode
+      } else {
+        formData.append("file", files[0]); // ✅ Use "file" for Candidate Mode
+      }
+
+      formData.append("role", role);
+      formData.append("mode", mode);
+
       const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { "Content-Type": "multipart/form-data" }
       });
-      
-      console.log("API Response:", response.data); // Debugging
-      if (mode === 'company') {
+
+      console.log("✅ API Response:", response.data);
+      if (mode === "company") {
         setBatchResult(response.data || {});
       } else {
         setResult(response.data || {});
       }
     } catch (error) {
-      console.error("Upload Error:", error.response ? error.response.data : error.message);
+      console.error("❌ Upload Error:", error.response ? error.response.data : error.message);
       setError(error.response?.data?.error || "An error occurred. Please try again.");
     }
+
     setLoading(false);
   };
 
@@ -67,9 +75,22 @@ export default function App() {
       </button>
 
       <div className="upload-box">
-        <input type="text" placeholder="Enter Role (e.g., Data Scientist)" value={role} onChange={(e) => setRole(e.target.value)} className="input-field" />
-        <input type="file" multiple={mode === 'company'} onChange={handleFileChange} className="input-field" />
-        <button onClick={handleUpload} className="upload-btn">{loading ? 'Analyzing...' : 'Analyze Resume'}</button>
+        <input 
+          type="text" 
+          placeholder="Enter Role (e.g., Data Scientist)" 
+          value={role} 
+          onChange={(e) => setRole(e.target.value)} 
+          className="input-field" 
+        />
+        <input 
+          type="file" 
+          multiple={mode === 'company'} 
+          onChange={handleFileChange} 
+          className="input-field" 
+        />
+        <button onClick={handleUpload} className="upload-btn">
+          {loading ? '⏳ Analyzing...' : '📄 Analyze Resume'}
+        </button>
       </div>
 
       {error && <p className="error-message">{error}</p>}
@@ -82,7 +103,9 @@ export default function App() {
 const ResultDisplay = ({ mode, result }) => (
   <div className="result-box">
     <h2 className="result-title">📊 Analysis Result</h2>
-    <p className={`role-badge ${result?.suited_for_role === 'Yes' ? 'success' : 'fail'}`}>{result?.suited_for_role === 'Yes' ? '✅ Suitable' : '❌ Not Suitable'}</p>
+    <p className={`role-badge ${result?.suited_for_role === 'Yes' ? 'success' : 'fail'}`}>
+      {result?.suited_for_role === 'Yes' ? '✅ Suitable' : '❌ Not Suitable'}
+    </p>
     <Section title="💪 Strong Points" data={result?.strong_points || []} />
     <Section title="⚠️ Weak Points" data={result?.weak_points || []} />
     <Section title="💡 Improvement Suggestions" data={result?.improvement_suggestions || []} />
@@ -99,7 +122,7 @@ const BatchResultDisplay = ({ batchResult }) => (
     <ul className="ranking-list">
       {batchResult?.ranking?.map((item, idx) => (
         <li key={idx} className="ranking-item">
-          <strong>Rank {item.index + 1} (Score: {item.score}%)</strong>: {item.summary}
+          <strong>🏅 Rank {item.index + 1} (Score: {item.score}%)</strong>: {item.summary}
         </li>
       )) || <li>No ranking data available.</li>}
     </ul>
@@ -110,7 +133,7 @@ const Section = ({ title, data }) => (
   <div className="section-box">
     <h3 className="section-title">{title}</h3>
     <ul>
-      {data.length > 0 ? data.map((point, idx) => <li key={idx}>{point}</li>) : <li>No data available.</li>}
+      {data.length > 0 ? data.map((point, idx) => <li key={idx}>✅ {point}</li>) : <li>❌ No data available.</li>}
     </ul>
   </div>
 );
