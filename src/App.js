@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './index.css';
 import './App.css';
@@ -31,7 +31,9 @@ export default function App() {
       formData.append('mode', mode);
 
       const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
-      setResult(response.data || {});
+      console.log("API Response:", response.data); // Debugging API response
+
+      setResult(response.data?.data || response.data || {}); // Handles case where API wraps response in a `data` field
     } catch (error) {
       handleError(error);
     }
@@ -48,7 +50,9 @@ export default function App() {
       formData.append('role', role);
 
       const response = await axios.post(`${API_BASE_URL}/api/compare-batch`, formData);
-      setBatchResult(response.data || {});
+      console.log("Batch API Response:", response.data); // Debugging batch API response
+
+      setBatchResult(response.data?.data || response.data || {});
     } catch (error) {
       handleError(error);
     }
