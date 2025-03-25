@@ -117,18 +117,24 @@ const ResultDisplay = ({ mode, result }) => (
   </div>
 );
 
-// ✅ Company Mode Batch Result Display - Now includes Candidate Name + File Name
+// ✅ Company Mode Batch Result Display - Now includes Candidate Name + File Name with Safe Handling
 const BatchResultDisplay = ({ batchResult }) => (
   <div className="result-box">
     <h2 className="result-title">🏆 Batch Comparison Result</h2>
     <ul className="ranking-list">
       {batchResult?.ranking?.length > 0 ? (
-        batchResult.ranking.map((item, idx) => (
-          <li key={idx} className="ranking-item">
-            <strong>🏅 Rank {idx + 1} (Score: {item.score}%)</strong><br />
-            <span className="summary">{`${item.candidate_name} (${item.file_name}) - ${item.summary}`}</span>
-          </li>
-        ))
+        batchResult.ranking.map((item, idx) => {
+          // ✅ Safe Handling for Candidate Name & File Name
+          const candidateName = item.candidate_name && item.candidate_name.trim() !== "" ? item.candidate_name : "Unknown Candidate";
+          const fileName = item.file_name && item.file_name.trim() !== "" ? item.file_name : "Unknown File";
+
+          return (
+            <li key={idx} className="ranking-item">
+              <strong>🏅 Rank {idx + 1} (Score: {item.score}%)</strong><br />
+              <span className="summary">{`${candidateName} (${fileName}) - ${item.summary}`}</span>
+            </li>
+          );
+        })
       ) : (
         <li>No ranking data available.</li>
       )}
