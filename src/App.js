@@ -13,7 +13,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  // 🔄 Toggle Candidate/Company Mode
+  // 🔄 Toggle Mode
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
@@ -32,7 +32,7 @@ export default function App() {
   // 🚀 Upload & Analyze Resume(s)
   const handleUpload = async () => {
     if (!files.length || !role) {
-      setError("⚠️ Please provide both file(s) and role.");
+      setError("⚠️ Please select file(s) and enter a job role.");
       return;
     }
     setLoading(true);
@@ -40,38 +40,30 @@ export default function App() {
 
     try {
       const formData = new FormData();
-
       if (mode === "company") {
-        files.forEach(file => formData.append("files", file)); // ✅ "files[]" for Company Mode
+        files.forEach(file => formData.append("files", file));
       } else {
-        formData.append("file", files[0]); // ✅ "file" for Candidate Mode
+        formData.append("file", files[0]);
       }
-
       formData.append("role", role);
-      formData.append("mode", mode);
 
-      console.log("📡 Debugging Form Data Before Sending:");
-      for (let pair of formData.entries()) {
-        console.log(`🔹 ${pair[0]}:`, pair[1]);
-      }
+      // ✅ Correct API endpoint
+      const endpoint = mode === 'company' ? 'compare-batch' : 'analyze';
 
       const response = await axios.post(
-        `${API_BASE_URL}/api/${mode === 'company' ? 'compare-batch' : 'analyze'}`,
+        `${API_BASE_URL}/api/${endpoint}`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      console.log("✅ API Response:", response.data);
       if (mode === "company") {
         setBatchResult(response.data || {});
       } else {
         setResult(response.data || {});
       }
     } catch (error) {
-      console.error("❌ Upload Error:", error.response ? error.response.data : error.message);
       setError(error.response?.data?.error || "An error occurred. Please try again.");
     }
-
     setLoading(false);
   };
 
@@ -98,6 +90,16 @@ export default function App() {
           onChange={handleFileChange} 
           className="input-field" 
         />
+        {files.length > 0 && (
+          <div className="file-preview">
+            <strong>Selected Files:</strong>
+            <ul>
+              {files.map((file, idx) => (
+                <li key={idx}>{file.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         <button onClick={handleUpload} className="upload-btn">
           {loading ? '⏳ Analyzing...' : '📄 Analyze Resume'}
         </button>
