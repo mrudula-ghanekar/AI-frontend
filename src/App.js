@@ -39,14 +39,20 @@ export default function App() {
       files.forEach(file => formData.append('files', file));
       formData.append('role', role);
       formData.append('mode', mode);
-      const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
+      
+      const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      console.log("API Response:", response.data); // Debugging
       if (mode === 'company') {
         setBatchResult(response.data || {});
       } else {
         setResult(response.data || {});
       }
     } catch (error) {
-      setError("An error occurred. Please try again.");
+      console.error("Upload Error:", error.response ? error.response.data : error.message);
+      setError(error.response?.data?.error || "An error occurred. Please try again.");
     }
     setLoading(false);
   };
