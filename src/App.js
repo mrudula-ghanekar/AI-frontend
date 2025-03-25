@@ -15,7 +15,7 @@ export default function App() {
 
   // 🔄 Toggle Candidate/Company Mode
   const handleModeToggle = () => {
-    setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
+    setMode((prev) => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
     setBatchResult(null);
     setFiles([]);
@@ -32,7 +32,7 @@ export default function App() {
   // 🚀 Upload & Analyze Resume(s)
   const handleUpload = async () => {
     if (!files.length || !role) {
-      setError("⚠️ Please select file(s) and enter a job role.");
+      setError('⚠️ Please select file(s) and enter a job role.');
       return;
     }
     setLoading(true);
@@ -40,29 +40,27 @@ export default function App() {
 
     try {
       const formData = new FormData();
-      if (mode === "company") {
-        files.forEach(file => formData.append("files", file));
+      if (mode === 'company') {
+        files.forEach((file) => formData.append('files', file));
       } else {
-        formData.append("file", files[0]);
+        formData.append('file', files[0]);
       }
-      formData.append("role", role);
+      formData.append('role', role);
 
-      // ✅ Correct API endpoint
       const endpoint = mode === 'company' ? 'compare-batch' : 'analyze';
-
       const response = await axios.post(
         `${API_BASE_URL}/api/${endpoint}`,
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { headers: { 'Content-Type': 'multipart/form-data' } }
       );
 
-      if (mode === "company") {
+      if (mode === 'company') {
         setBatchResult(response.data || {});
       } else {
         setResult(response.data || {});
       }
     } catch (error) {
-      setError(error.response?.data?.error || "An error occurred. Please try again.");
+      setError(error.response?.data?.error || 'An error occurred. Please try again.');
     }
     setLoading(false);
   };
@@ -77,18 +75,18 @@ export default function App() {
       </button>
 
       <div className="upload-box">
-        <input 
-          type="text" 
-          placeholder="Enter Role (e.g., Data Scientist)" 
-          value={role} 
-          onChange={(e) => setRole(e.target.value)} 
-          className="input-field" 
+        <input
+          type="text"
+          placeholder="Enter Role (e.g., Data Scientist)"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          className="input-field"
         />
-        <input 
-          type="file" 
-          multiple={mode === 'company'} 
-          onChange={handleFileChange} 
-          className="input-field" 
+        <input
+          type="file"
+          multiple={mode === 'company'}
+          onChange={handleFileChange}
+          className="input-field"
         />
         {files.length > 0 && (
           <div className="file-preview">
@@ -100,7 +98,7 @@ export default function App() {
             </ul>
           </div>
         )}
-        <button onClick={handleUpload} className="upload-btn">
+        <button onClick={handleUpload} className="upload-btn" disabled={loading}>
           {loading ? '⏳ Analyzing...' : '📄 Analyze Resume'}
         </button>
       </div>
@@ -136,14 +134,15 @@ const BatchResultDisplay = ({ batchResult }) => (
     <ul className="ranking-list">
       {batchResult?.ranking?.length > 0 ? (
         batchResult.ranking.map((item, idx) => {
-          // ✅ Ensure correct fallback when AI misses the name
-          const candidateName = item.candidate_name && item.candidate_name !== "Unknown Candidate"
-            ? item.candidate_name
-            : item.file_name || "Unnamed Candidate";
-          
+          const candidateName =
+            item.candidate_name && item.candidate_name !== 'Unknown Candidate'
+              ? item.candidate_name
+              : item.file_name || 'Unnamed Candidate';
+
           return (
             <li key={idx} className="ranking-item">
-              <strong>🏅 Rank {idx + 1} (Score: {item.score}%)</strong><br />
+              <strong>🏅 Rank {idx + 1} (Score: {item.score}%)</strong>
+              <br />
               <span className="summary">{candidateName} - {item.summary}</span>
             </li>
           );
