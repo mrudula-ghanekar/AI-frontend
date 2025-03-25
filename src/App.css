@@ -1,64 +1,203 @@
-/* General Styling */
+/* 🌟 General Styles */
 body {
-  background: #f4f4f9;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
-/* Upload Box */
-.upload-box {
+.container {
+  max-width: 800px;
+  width: 100%;
   background: white;
-  border-radius: 10px;
   padding: 20px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  transition: 0.3s ease-in-out;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
-/* Drag & Drop Area */
-.dropzone {
-  border: 2px dashed #3498db;
-  padding: 20px;
-  text-align: center;
-  border-radius: 10px;
-  background: #ecf6ff;
+/* 🏆 Title & Subtitle */
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* 🔄 Toggle Mode Button */
+.toggle-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background 0.3s;
+  margin-bottom: 20px;
+  transition: 0.3s;
+}
+
+.toggle-btn:hover {
+  background-color: #0056b3;
+}
+
+/* 📂 Upload Box */
+.upload-box {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+/* 🎯 Drag & Drop File Upload */
+.dropzone {
+  border: 2px dashed #007bff;
+  padding: 20px;
+  margin-top: 10px;
+  background: #f0f8ff;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .dropzone:hover {
-  background: #d7ebff;
+  background: #e0f0ff;
 }
 
-/* Buttons */
-.upload-btn {
-  background: linear-gradient(45deg, #007bff, #0056b3);
-  color: white;
-  padding: 12px;
-  border-radius: 8px;
-  font-weight: bold;
-  transition: 0.3s;
+/* 📜 File Preview */
+.file-preview {
+  margin-top: 15px;
+  text-align: left;
 }
 
-.upload-btn:hover {
-  background: linear-gradient(45deg, #0056b3, #003580);
+.file-preview ul {
+  list-style: none;
+  padding: 0;
 }
 
-/* Ranking Cards */
-.ranking-card {
-  background: white;
-  border-radius: 8px;
+.file-preview li {
+  background: #eef;
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 5px;
+}
+
+/* 📊 Analysis & Results */
+.result-box {
+  background: #fff;
   padding: 15px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  transition: 0.3s;
-  margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  text-align: left;
 }
 
-.ranking-card:hover {
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Highlighted Best Resume */
-.best-resume {
-  font-size: 1.2em;
+.result-title {
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #27ae60;
+  color: #333;
+}
+
+.role-badge {
+  font-size: 1rem;
+  font-weight: bold;
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.success {
+  background: #28a745;
+  color: white;
+}
+
+.fail {
+  background: #dc3545;
+  color: white;
+}
+
+/* 📊 Ranking Display */
+.ranking-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.ranking-card {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.rank-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.score {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* ✅ Section Styling */
+.section-box {
+  margin-top: 10px;
+  padding: 10px;
+  background: #eef;
+  border-radius: 5px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 📱 Responsive Styles */
+@media (max-width: 768px) {
+  .container {
+    max-width: 95%;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .upload-box, .result-box {
+    max-width: 100%;
+  }
+
+  .ranking-card {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
 }
