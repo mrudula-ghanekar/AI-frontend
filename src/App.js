@@ -66,14 +66,18 @@ export default function App() {
 const ResultDisplay = ({ mode, result }) => (
   <div className="result-box">
     <h2 className="result-title">📊 Analysis Result</h2>
-    <p><strong>Suited for Role:</strong> {result?.suited_for_role === 'Yes' ? '✅ Yes' : '❌ No'}</p>
+    <p className={`role-badge ${result?.suited_for_role === 'Yes' ? 'success' : 'fail'}`}>{result?.suited_for_role === 'Yes' ? '✅ Suitable' : '❌ Not Suitable'}</p>
     <Section title="💪 Strong Points" data={result?.strong_points || []} />
+    <Section title="⚠️ Weak Points" data={result?.weak_points || []} />
     <Section title="💡 Improvement Suggestions" data={result?.improvement_suggestions || []} />
+    {mode === 'company' && result?.comparison_score && (
+      <Section title="📊 Comparison Score" data={[result.comparison_score]} />
+    )}
   </div>
 );
 
 const Section = ({ title, data }) => (
-  <div>
+  <div className="section-box">
     <h3 className="section-title">{title}</h3>
     <ul>
       {data.length > 0 ? data.map((point, idx) => <li key={idx}>{point}</li>) : <li>No data available.</li>}
