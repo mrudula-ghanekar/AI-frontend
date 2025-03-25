@@ -1,7 +1,8 @@
-/* 🌟 General Styles */
+/* Global Styles */
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f8f9fa;
+  background-color: #f4f7fc;
+  color: #333;
   margin: 0;
   padding: 0;
   display: flex;
@@ -10,83 +11,89 @@ body {
   min-height: 100vh;
 }
 
+/* Main Container */
 .container {
-  max-width: 800px;
-  width: 100%;
+  max-width: 900px;
   background: white;
-  padding: 20px;
+  padding: 30px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
-/* 🏆 Title & Subtitle */
+/* Title & Subtitle */
 .title {
-  font-size: 2rem;
+  font-size: 24px;
   font-weight: bold;
-  color: #007bff;
+  color: #2c3e50;
   margin-bottom: 10px;
 }
 
 .subtitle {
-  font-size: 1.2rem;
-  color: #555;
+  font-size: 16px;
+  color: #7f8c8d;
   margin-bottom: 20px;
 }
 
-/* 🔄 Toggle Mode Button */
+/* Toggle Button */
 .toggle-btn {
-  background-color: #007bff;
+  background-color: #3498db;
   color: white;
+  padding: 10px 20px;
+  font-size: 16px;
   border: none;
-  padding: 10px 15px;
-  font-size: 1rem;
   border-radius: 5px;
   cursor: pointer;
-  margin-bottom: 20px;
-  transition: 0.3s;
+  transition: background 0.3s ease;
 }
 
 .toggle-btn:hover {
-  background-color: #0056b3;
+  background-color: #2980b9;
 }
 
-/* 📂 Upload Box */
+/* Upload Box */
 .upload-box {
-  background: #fff;
-  padding: 15px;
+  margin-top: 20px;
+  padding: 20px;
+  border: 2px dashed #bdc3c7;
   border-radius: 10px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  background-color: #ecf0f1;
 }
 
-.input-field {
+.upload-box input[type="text"] {
   width: 100%;
   padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
+  font-size: 14px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
   border-radius: 5px;
-  font-size: 1rem;
 }
 
-/* 🎯 Drag & Drop File Upload */
-.dropzone {
-  border: 2px dashed #007bff;
-  padding: 20px;
-  margin-top: 10px;
-  background: #f0f8ff;
+.upload-box input[type="file"] {
+  margin: 10px 0;
+}
+
+.upload-btn {
+  background-color: #27ae60;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-.dropzone:hover {
-  background: #e0f0ff;
+.upload-btn:hover {
+  background-color: #219150;
 }
 
-/* 📜 File Preview */
+/* File Preview */
 .file-preview {
-  margin-top: 15px;
-  text-align: left;
+  margin-top: 10px;
+  padding: 10px;
+  background: #dff9fb;
+  border-radius: 5px;
 }
 
 .file-preview ul {
@@ -95,109 +102,117 @@ body {
 }
 
 .file-preview li {
-  background: #eef;
-  padding: 8px;
-  margin: 5px 0;
-  border-radius: 5px;
+  font-size: 14px;
+  padding: 5px 0;
 }
 
-/* 📊 Analysis & Results */
+/* Result Box */
 .result-box {
-  background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   text-align: left;
 }
 
 .result-title {
-  font-size: 1.5rem;
+  font-size: 18px;
   font-weight: bold;
-  color: #333;
+  margin-bottom: 10px;
 }
 
-.role-badge {
-  font-size: 1rem;
-  font-weight: bold;
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 5px;
-  margin-top: 10px;
-}
-
-.success {
-  background: #28a745;
-  color: white;
-}
-
-.fail {
-  background: #dc3545;
-  color: white;
-}
-
-/* 📊 Ranking Display */
+/* Ranking List */
 .ranking-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 15px;
 }
 
 .ranking-card {
   background: #f8f9fa;
   padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: left;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .rank-title {
-  font-size: 1.2rem;
   font-weight: bold;
-  color: #007bff;
+  font-size: 16px;
+  color: #2c3e50;
 }
 
 .score {
-  font-size: 1rem;
-  font-weight: bold;
+  font-size: 14px;
+  color: #555;
+  margin: 5px 0;
+}
+
+.summary {
+  font-size: 14px;
   color: #333;
 }
 
-/* ✅ Section Styling */
-.section-box {
+/* Drag & Drop Upload */
+.dropzone {
+  padding: 20px;
+  border: 2px dashed #95a5a6;
+  background: #ecf0f1;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.dropzone p {
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+/* Error Message */
+.error-message {
+  color: red;
+  font-weight: bold;
   margin-top: 10px;
-  padding: 10px;
-  background: #eef;
+}
+
+/* Success Badge */
+.role-badge {
+  font-size: 14px;
+  font-weight: bold;
+  padding: 5px 10px;
   border-radius: 5px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.success {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.fail {
+  background-color: #e74c3c;
+  color: white;
+}
+
+/* Section Box */
+.section-box {
+  margin-top: 15px;
 }
 
 .section-title {
-  font-size: 1.1rem;
+  font-size: 16px;
   font-weight: bold;
-  color: #333;
+  margin-bottom: 5px;
 }
 
-/* 📱 Responsive Styles */
-@media (max-width: 768px) {
-  .container {
-    max-width: 95%;
-  }
+.section-box ul {
+  list-style: none;
+  padding: 0;
+}
 
-  .title {
-    font-size: 1.5rem;
-  }
-
-  .subtitle {
-    font-size: 1rem;
-  }
-
-  .upload-box, .result-box {
-    max-width: 100%;
-  }
-
-  .ranking-card {
-    padding: 10px;
-    font-size: 0.9rem;
-  }
+.section-box li {
+  font-size: 14px;
+  padding: 3px 0;
 }
