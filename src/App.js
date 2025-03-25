@@ -6,7 +6,7 @@ import './App.css';
 export default function App() {
   const [mode, setMode] = useState('candidate');
   const [role, setRole] = useState('');
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [result, setResult] = useState(null);
   const [batchResult, setBatchResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -17,25 +17,34 @@ export default function App() {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
     setBatchResult(null);
-    setFile(null);
+    setFiles([]);
     setRole('');
     setError(null);
   };
 
+  const handleFileChange = (e) => {
+    const selectedFiles = mode === 'company' ? Array.from(e.target.files) : [e.target.files[0]];
+    setFiles(selectedFiles);
+  };
+
   const handleUpload = async () => {
-    if (!file || !role) {
-      setError("Please provide both file and role.");
+    if (!files.length || !role) {
+      setError("Please provide both file(s) and role.");
       return;
     }
     setLoading(true);
     setError(null);
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      files.forEach(file => formData.append('files', file));
       formData.append('role', role);
       formData.append('mode', mode);
       const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
-      setResult(response.data || {});
+      if (mode === 'company') {
+        setBatchResult(response.data || {});
+      } else {
+        setResult(response.data || {});
+      }
     } catch (error) {
       setError("An error occurred. Please try again.");
     }
@@ -53,12 +62,13 @@ export default function App() {
 
       <div className="upload-box">
         <input type="text" placeholder="Enter Role (e.g., Data Scientist)" value={role} onChange={(e) => setRole(e.target.value)} className="input-field" />
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} className="input-field" />
+        <input type="file" multiple={mode === 'company'} onChange={handleFileChange} className="input-field" />
         <button onClick={handleUpload} className="upload-btn">{loading ? 'Analyzing...' : 'Analyze Resume'}</button>
       </div>
 
       {error && <p className="error-message">{error}</p>}
       {result && <ResultDisplay mode={mode} result={result} />}
+      {batchResult && <BatchResultDisplay batchResult={batchResult} />}
     </div>
   );
 }
@@ -73,6 +83,20 @@ const ResultDisplay = ({ mode, result }) => (
     {mode === 'company' && result?.comparison_score && (
       <Section title="📊 Comparison Score" data={[result.comparison_score]} />
     )}
+  </div>
+);
+
+const BatchResultDisplay = ({ batchResult }) => (
+  <div className="result-box">
+    <h2 className="result-title">🏆 Batch Comparison Result</h2>
+    <h3 className="best-resume">Best Resume: {batchResult?.best_resume_summary || 'N/A'}</h3>
+    <ul className="ranking-list">
+      {batchResult?.ranking?.map((item, idx) => (
+        <li key={idx} className="ranking-item">
+          <strong>Rank {item.index + 1} (Score: {item.score}%)</strong>: {item.summary}
+        </li>
+      )) || <li>No ranking data available.</li>}
+    </ul>
   </div>
 );
 
