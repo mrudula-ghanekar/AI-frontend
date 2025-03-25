@@ -137,8 +137,10 @@ const BatchResultDisplay = ({ batchResult }) => (
       {batchResult?.ranking?.length > 0 ? (
         batchResult.ranking.map((item, idx) => {
           // ✅ Ensure fallback to file name if AI doesn't extract candidate name
-          const nameOrFile = item.candidate_name ? `${item.candidate_name} (${item.file_name})` : `${item.file_name}`;
-
+          const nameOrFile = item.candidate_name && item.candidate_name !== "undefined" 
+          ? `${item.candidate_name} (${item.file_name})` 
+          : `${item.file_name}`;
+        
           return (
             <li key={idx} className="ranking-item">
               <strong>🏅 Rank {idx + 1} (Score: {item.score}%)</strong><br />
