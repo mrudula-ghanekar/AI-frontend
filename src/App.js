@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import './index.css';
 import './App.css';
@@ -13,6 +13,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
+  // 🔄 Toggle Candidate/Company Mode
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
@@ -22,11 +23,13 @@ export default function App() {
     setError(null);
   };
 
+  // 📂 Handle File Selection
   const handleFileChange = (e) => {
     const selectedFiles = mode === 'company' ? Array.from(e.target.files) : [e.target.files[0]];
     setFiles(selectedFiles);
   };
 
+  // 🚀 Upload & Analyze Resume(s)
   const handleUpload = async () => {
     if (!files.length || !role) {
       setError("⚠️ Please provide both file(s) and role.");
@@ -39,19 +42,24 @@ export default function App() {
       const formData = new FormData();
 
       if (mode === "company") {
-        files.forEach(file => formData.append("files", file)); // ✅ Use "files" for Company Mode
+        files.forEach(file => formData.append("files", file)); // ✅ "files[]" for Company Mode
       } else {
-        formData.append("file", files[0]); // ✅ Use "file" for Candidate Mode
+        formData.append("file", files[0]); // ✅ "file" for Candidate Mode
       }
 
       formData.append("role", role);
       formData.append("mode", mode);
 
-      console.log("📡 Sending Form Data:", [...formData.entries()]);
+      console.log("📡 Debugging Form Data Before Sending:");
+      for (let pair of formData.entries()) {
+        console.log(`🔹 ${pair[0]}:`, pair[1]);
+      }
 
-      const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      const response = await axios.post(
+        `${API_BASE_URL}/api/${mode === 'company' ? 'compare-batch' : 'analyze'}`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
       console.log("✅ API Response:", response.data);
       if (mode === "company") {
@@ -102,6 +110,7 @@ export default function App() {
   );
 }
 
+// ✅ Candidate Mode Result Display
 const ResultDisplay = ({ mode, result }) => (
   <div className="result-box">
     <h2 className="result-title">📊 Analysis Result</h2>
@@ -117,20 +126,26 @@ const ResultDisplay = ({ mode, result }) => (
   </div>
 );
 
+// ✅ Company Mode Batch Result Display
 const BatchResultDisplay = ({ batchResult }) => (
   <div className="result-box">
     <h2 className="result-title">🏆 Batch Comparison Result</h2>
     <h3 className="best-resume">Best Resume: {batchResult?.best_resume_summary || 'N/A'}</h3>
     <ul className="ranking-list">
-      {batchResult?.ranking?.map((item, idx) => (
-        <li key={idx} className="ranking-item">
-          <strong>🏅 Rank {item.index + 1} (Score: {item.score}%)</strong>: {item.summary}
-        </li>
-      )) || <li>No ranking data available.</li>}
+      {batchResult?.ranking?.length > 0 ? (
+        batchResult.ranking.map((item, idx) => (
+          <li key={idx} className="ranking-item">
+            <strong>🏅 Rank {item.index + 1} (Score: {item.score}%)</strong>: {item.summary}
+          </li>
+        ))
+      ) : (
+        <li>No ranking data available.</li>
+      )}
     </ul>
   </div>
 );
 
+// ✅ Reusable Section Component
 const Section = ({ title, data }) => (
   <div className="section-box">
     <h3 className="section-title">{title}</h3>
