@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
 import './index.css';
 import './App.css';
+import './LandingPage';
 
 export default function App() {
   const [mode, setMode] = useState('candidate');
@@ -28,7 +29,11 @@ export default function App() {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: acceptedFiles => setFiles(acceptedFiles),
     multiple: mode === 'company',
-    accept: '.pdf,.doc,.docx'
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/msword': ['.doc'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+    }
   });
 
   // 🚀 Upload & Analyze Resume(s)
@@ -129,18 +134,19 @@ const BatchResultDisplay = ({ batchResult }) => (
   <div className="result-box">
     <h2 className="result-title">🏆 Batch Comparison Result</h2>
     <h3 className="best-resume">Best Resume: {batchResult?.best_resume_summary || 'N/A'}</h3>
-    <ul className="ranking-list">
+    <div className="ranking-container">
       {batchResult?.ranking?.length > 0 ? (
         batchResult.ranking.map((item, idx) => (
-          <li key={idx} className="ranking-item">
-            <strong>🏅 Rank {idx + 1} (Score: {item.score}%)</strong><br />
-            <span className="summary">{item.candidate_name || item.file_name} - {item.summary}</span>
-          </li>
+          <div key={idx} className="ranking-card">
+            <h4 className="rank-title">🏅 Rank {idx + 1}</h4>
+            <p className="score">Score: <strong>{item.score}%</strong></p>
+            <p className="summary">{item.candidate_name || item.file_name} - {item.summary}</p>
+          </div>
         ))
       ) : (
-        <li>No ranking data available.</li>
+        <p>No ranking data available.</p>
       )}
-    </ul>
+    </div>
   </div>
 );
 
