@@ -9,6 +9,8 @@ export default function App() {
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
   const [batchResult, setBatchResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleModeToggle = () => {
@@ -17,142 +19,64 @@ export default function App() {
     setBatchResult(null);
     setFile(null);
     setRole('');
+    setError(null);
   };
 
   const handleUpload = async () => {
     if (!file || !role) {
-      alert("Please provide both file and role.");
+      setError("Please provide both file and role.");
       return;
     }
+    setLoading(true);
+    setError(null);
     try {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('role', role);
       formData.append('mode', mode);
-
       const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData);
-      console.log("API Response:", response.data); // Debugging API response
-
-      setResult(response.data?.data || response.data || {}); // Handles case where API wraps response in a `data` field
+      setResult(response.data || {});
     } catch (error) {
-      handleError(error);
+      setError("An error occurred. Please try again.");
     }
-  };
-
-  const handleBatchCompare = async () => {
-    if (!file || !role) {
-      alert("Please upload files and enter role.");
-      return;
-    }
-    try {
-      const formData = new FormData();
-      file.forEach(f => formData.append('files', f));
-      formData.append('role', role);
-
-      const response = await axios.post(`${API_BASE_URL}/api/compare-batch`, formData);
-      console.log("Batch API Response:", response.data); // Debugging batch API response
-
-      setBatchResult(response.data?.data || response.data || {});
-    } catch (error) {
-      handleError(error);
-    }
-  };
-
-  const handleError = (error) => {
-    if (error.response) alert(`Error: ${error.response.data.message || 'Server Error'}`);
-    else if (error.request) alert("No response from server.");
-    else alert("Error: " + error.message);
+    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-blue-100 flex flex-col items-center py-10 px-6">
-      <h1 className="text-5xl font-extrabold text-gray-800 mb-4">🚀 ResumeHelp AI</h1>
-      <p className="text-lg text-gray-700 mb-8 text-center">AI-Powered Resume Analyzer & Job Match Tool</p>
+    <div className="container">
+      <h1 className="title">🚀 ResumeHelp AI</h1>
+      <p className="subtitle">AI-Powered Resume Analyzer & Job Match Tool</p>
 
-      <button
-        onClick={handleModeToggle}
-        className="bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-lg hover:bg-indigo-700 transition mb-6"
-      >
+      <button onClick={handleModeToggle} className="toggle-btn">
         Switch to {mode === 'candidate' ? 'Company' : 'Candidate'} Mode
       </button>
 
-      <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-3xl space-y-6">
-        <input
-          type="text"
-          placeholder="Enter Role (e.g., Data Scientist)"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-400 outline-none"
-        />
-        <input
-          type="file"
-          onChange={(e) => setFile(mode === 'candidate' ? e.target.files[0] : Array.from(e.target.files))}
-          multiple={mode === 'company'}
-          className="border border-gray-300 rounded-lg p-3 w-full focus:ring-2 focus:ring-blue-400 outline-none"
-        />
-
-        <div className="flex gap-4">
-          <button
-            onClick={mode === 'candidate' ? handleUpload : handleBatchCompare}
-            className="bg-green-500 text-white px-6 py-3 rounded-lg w-full hover:bg-green-600 transition"
-          >
-            {mode === 'candidate' ? 'Analyze Resume' : 'Compare Batch'}
-          </button>
-          <button
-            onClick={() => { setFile(null); setRole(''); setResult(null); setBatchResult(null); }}
-            className="bg-red-500 text-white px-6 py-3 rounded-lg w-full hover:bg-red-600 transition"
-          >
-            Reset
-          </button>
-        </div>
+      <div className="upload-box">
+        <input type="text" placeholder="Enter Role (e.g., Data Scientist)" value={role} onChange={(e) => setRole(e.target.value)} className="input-field" />
+        <input type="file" onChange={(e) => setFile(e.target.files[0])} className="input-field" />
+        <button onClick={handleUpload} className="upload-btn">{loading ? 'Analyzing...' : 'Analyze Resume'}</button>
       </div>
 
+      {error && <p className="error-message">{error}</p>}
       {result && <ResultDisplay mode={mode} result={result} />}
-      {batchResult && <BatchResultDisplay batchResult={batchResult} />}
     </div>
   );
 }
 
 const ResultDisplay = ({ mode, result }) => (
-  <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
-    <h2 className="text-3xl font-bold text-gray-800">📊 Analysis Result</h2>
+  <div className="result-box">
+    <h2 className="result-title">📊 Analysis Result</h2>
     <p><strong>Suited for Role:</strong> {result?.suited_for_role === 'Yes' ? '✅ Yes' : '❌ No'}</p>
     <Section title="💪 Strong Points" data={result?.strong_points || []} />
     <Section title="💡 Improvement Suggestions" data={result?.improvement_suggestions || []} />
-    {mode === 'company' && result?.comparison_score && (
-      <Section title="📊 Comparison Score" data={[result.comparison_score]} />
-    )}
-  </div>
-);
-
-const BatchResultDisplay = ({ batchResult }) => (
-  <div className="bg-white shadow-xl rounded-xl p-8 w-full max-w-4xl mt-10 space-y-6">
-    <h2 className="text-3xl font-bold text-gray-800">🏆 Batch Comparison Result</h2>
-    <p><strong>Best Resume Summary:</strong> {batchResult?.best_resume_summary || 'N/A'}</p>
-    <h3 className="font-semibold mt-4 text-lg">Rankings:</h3>
-    <ul className="list-decimal pl-6 space-y-2">
-      {batchResult?.ranking?.length > 0 ? (
-        batchResult.ranking.map((item, idx) => (
-          <li key={idx} className="text-gray-700">
-            <strong>Rank {item.index + 1} (Score: {item.score}%)</strong>: {item.summary}
-          </li>
-        ))
-      ) : (
-        <li className="text-gray-500">No ranking data available.</li>
-      )}
-    </ul>
   </div>
 );
 
 const Section = ({ title, data }) => (
   <div>
-    <h3 className="font-semibold text-lg">{title}</h3>
-    <ul className="list-disc pl-6 space-y-1">
-      {data.length > 0 ? (
-        data.map((point, idx) => <li key={idx}>{point}</li>)
-      ) : (
-        <li className="text-gray-500">No data available.</li>
-      )}
+    <h3 className="section-title">{title}</h3>
+    <ul>
+      {data.length > 0 ? data.map((point, idx) => <li key={idx}>{point}</li>) : <li>No data available.</li>}
     </ul>
   </div>
 );
