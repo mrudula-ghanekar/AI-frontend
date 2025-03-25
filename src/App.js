@@ -34,7 +34,7 @@ export default function App() {
     }
     setLoading(true);
     setError(null);
-  
+
     try {
       const formData = new FormData();
 
@@ -46,6 +46,8 @@ export default function App() {
 
       formData.append("role", role);
       formData.append("mode", mode);
+
+      console.log("📡 Sending Form Data:", [...formData.entries()]);
 
       const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
