@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useDropzone } from 'react-dropzone';
 import './index.css';
 import './App.css';
 
@@ -15,7 +16,7 @@ export default function App() {
 
   // 🔄 Toggle Candidate/Company Mode
   const handleModeToggle = () => {
-    setMode((prev) => (prev === 'candidate' ? 'company' : 'candidate'));
+    setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
     setBatchResult(null);
     setFiles([]);
@@ -23,16 +24,17 @@ export default function App() {
     setError(null);
   };
 
-  // 📂 Handle File Selection
-  const handleFileChange = (e) => {
-    const selectedFiles = mode === 'company' ? Array.from(e.target.files) : [e.target.files[0]];
-    setFiles(selectedFiles);
-  };
+  // 📂 Drag and Drop File Selection
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: acceptedFiles => setFiles(acceptedFiles),
+    multiple: mode === 'company',
+    accept: '.pdf,.doc,.docx'
+  });
 
   // 🚀 Upload & Analyze Resume(s)
   const handleUpload = async () => {
     if (!files.length || !role) {
-      setError('⚠️ Please select file(s) and enter a job role.');
+      setError("⚠️ Please select file(s) and enter a job role.");
       return;
     }
     setLoading(true);
@@ -40,27 +42,23 @@ export default function App() {
 
     try {
       const formData = new FormData();
-      if (mode === 'company') {
-        files.forEach((file) => formData.append('files', file));
-      } else {
-        formData.append('file', files[0]);
-      }
-      formData.append('role', role);
+      files.forEach(file => formData.append("files", file));
+      formData.append("role", role);
 
       const endpoint = mode === 'company' ? 'compare-batch' : 'analyze';
       const response = await axios.post(
         `${API_BASE_URL}/api/${endpoint}`,
         formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      if (mode === 'company') {
+      if (mode === "company") {
         setBatchResult(response.data || {});
       } else {
         setResult(response.data || {});
       }
     } catch (error) {
-      setError(error.response?.data?.error || 'An error occurred. Please try again.');
+      setError(error.response?.data?.error || "An error occurred. Please try again.");
     }
     setLoading(false);
   };
@@ -82,12 +80,13 @@ export default function App() {
           onChange={(e) => setRole(e.target.value)}
           className="input-field"
         />
-        <input
-          type="file"
-          multiple={mode === 'company'}
-          onChange={handleFileChange}
-          className="input-field"
-        />
+
+        {/* Drag & Drop File Upload */}
+        <div {...getRootProps({ className: 'dropzone' })}>
+          <input {...getInputProps()} />
+          <p>📂 Drag & Drop resumes here, or click to browse</p>
+        </div>
+
         {files.length > 0 && (
           <div className="file-preview">
             <strong>Selected Files:</strong>
@@ -98,7 +97,8 @@ export default function App() {
             </ul>
           </div>
         )}
-        <button onClick={handleUpload} className="upload-btn" disabled={loading}>
+
+        <button onClick={handleUpload} className="upload-btn">
           {loading ? '⏳ Analyzing...' : '📄 Analyze Resume'}
         </button>
       </div>
@@ -110,7 +110,6 @@ export default function App() {
   );
 }
 
-// ✅ Candidate Mode Result Display
 const ResultDisplay = ({ mode, result }) => (
   <div className="result-box">
     <h2 className="result-title">📊 Analysis Result</h2>
@@ -126,27 +125,18 @@ const ResultDisplay = ({ mode, result }) => (
   </div>
 );
 
-// ✅ Company Mode Batch Result Display (Shows Candidate Name OR File Name)
 const BatchResultDisplay = ({ batchResult }) => (
   <div className="result-box">
     <h2 className="result-title">🏆 Batch Comparison Result</h2>
     <h3 className="best-resume">Best Resume: {batchResult?.best_resume_summary || 'N/A'}</h3>
     <ul className="ranking-list">
       {batchResult?.ranking?.length > 0 ? (
-        batchResult.ranking.map((item, idx) => {
-          const candidateName =
-            item.candidate_name && item.candidate_name !== 'Unknown Candidate'
-              ? item.candidate_name
-              : item.file_name || 'Unnamed Candidate';
-
-          return (
-            <li key={idx} className="ranking-item">
-              <strong>🏅 Rank {idx + 1} (Score: {item.score}%)</strong>
-              <br />
-              <span className="summary">{candidateName} - {item.summary}</span>
-            </li>
-          );
-        })
+        batchResult.ranking.map((item, idx) => (
+          <li key={idx} className="ranking-item">
+            <strong>🏅 Rank {idx + 1} (Score: {item.score}%)</strong><br />
+            <span className="summary">{item.candidate_name || item.file_name} - {item.summary}</span>
+          </li>
+        ))
       ) : (
         <li>No ranking data available.</li>
       )}
@@ -154,7 +144,6 @@ const BatchResultDisplay = ({ batchResult }) => (
   </div>
 );
 
-// ✅ Reusable Section Component
 const Section = ({ title, data }) => (
   <div className="section-box">
     <h3 className="section-title">{title}</h3>

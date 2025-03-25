@@ -1,180 +1,64 @@
-/* Global Styles */
+/* General Styling */
 body {
-  font-family: 'Arial', sans-serif;
-  background: #f4f4f4;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  background: #f4f4f9;
+  font-family: 'Poppins', sans-serif;
 }
 
-.container {
-  background: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 90%;
-  max-width: 500px;
-}
-
-.title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.subtitle {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 20px;
-}
-
-/* Toggle Button */
-.toggle-btn {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-bottom: 15px;
-  transition: background 0.3s;
-}
-
-.toggle-btn:hover {
-  background: #0056b3;
-}
-
-/* Upload Section */
+/* Upload Box */
 .upload-box {
-  padding: 15px;
-  border: 2px dashed #007bff;
-  border-radius: 8px;
-  background: #f9f9f9;
-  margin-bottom: 20px;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  transition: 0.3s ease-in-out;
 }
 
-.input-field {
-  display: block;
-  width: 100%;
-  padding: 8px;
-  margin: 10px 0;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.upload-btn {
-  background: #28a745;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
+/* Drag & Drop Area */
+.dropzone {
+  border: 2px dashed #3498db;
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px;
+  background: #ecf6ff;
   cursor: pointer;
   transition: background 0.3s;
+}
+
+.dropzone:hover {
+  background: #d7ebff;
+}
+
+/* Buttons */
+.upload-btn {
+  background: linear-gradient(45deg, #007bff, #0056b3);
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: 0.3s;
 }
 
 .upload-btn:hover {
-  background: #218838;
+  background: linear-gradient(45deg, #0056b3, #003580);
 }
 
-/* Error Message */
-.error-message {
-  color: red;
-  font-size: 14px;
-  margin-top: 10px;
-}
-
-/* File Preview */
-.file-preview {
-  text-align: left;
-  margin-top: 10px;
-  background: #eef;
-  padding: 10px;
-  border-radius: 6px;
-}
-
-.file-preview ul {
-  list-style: none;
-  padding: 0;
-}
-
-.file-preview li {
-  font-size: 14px;
-}
-
-/* Results Box */
-.result-box {
-  text-align: left;
-  background: #fff;
-  padding: 15px;
+/* Ranking Cards */
+.ranking-card {
+  background: white;
   border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+  padding: 15px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: 0.3s;
+  margin-bottom: 15px;
 }
 
-.result-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
+.ranking-card:hover {
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.role-badge {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-weight: bold;
-}
-
-.success {
-  background: #28a745;
-  color: white;
-}
-
-.fail {
-  background: #dc3545;
-  color: white;
-}
-
-/* Section Box */
-.section-box {
-  margin-top: 15px;
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.section-box ul {
-  list-style: none;
-  padding-left: 10px;
-}
-
-.section-box li {
-  font-size: 14px;
-}
-
-/* Ranking List */
-.ranking-list {
-  list-style: none;
-  padding-left: 0;
-  margin-top: 10px;
-}
-
-.ranking-item {
-  background: #eef;
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 5px;
-}
-
+/* Highlighted Best Resume */
 .best-resume {
-  font-size: 16px;
+  font-size: 1.2em;
   font-weight: bold;
-  color: #007bff;
-  margin-top: 10px;
+  color: #27ae60;
 }
