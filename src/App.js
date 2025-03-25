@@ -128,7 +128,7 @@ const ResultDisplay = ({ mode, result }) => (
   </div>
 );
 
-// ✅ Company Mode Batch Result Display - Shows Candidate Name & File Name
+// ✅ Company Mode Batch Result Display - Only Shows File Names
 const BatchResultDisplay = ({ batchResult }) => (
   <div className="result-box">
     <h2 className="result-title">🏆 Batch Comparison Result</h2>
@@ -138,7 +138,6 @@ const BatchResultDisplay = ({ batchResult }) => (
         batchResult.ranking.map((item, idx) => (
           <li key={idx} className="ranking-item">
             <strong>🏅 Rank {idx + 1} (Score: {item.score}%)</strong><br />
-            <span className="candidate-name">🧑 {item.candidate_name ? item.candidate_name : "⚠️ Name Not Found"}</span><br />
             <span className="file-name">📄 {item.file_name}</span><br />
             <span className="summary">{item.summary}</span>
           </li>
