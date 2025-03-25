@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
 import './index.css';
 import './App.css';
-import './LandingPage';
 
 export default function App() {
   const [mode, setMode] = useState('candidate');
