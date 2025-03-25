@@ -13,7 +13,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  // 🔄 Toggle Mode
+  // 🔄 Toggle Candidate/Company Mode
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
@@ -128,19 +128,24 @@ const ResultDisplay = ({ mode, result }) => (
   </div>
 );
 
-// ✅ Company Mode Batch Result Display (Removed "Unknown -" Prefix)
+// ✅ Company Mode Batch Result Display (Shows Candidate Name OR File Name)
 const BatchResultDisplay = ({ batchResult }) => (
   <div className="result-box">
     <h2 className="result-title">🏆 Batch Comparison Result</h2>
     <h3 className="best-resume">Best Resume: {batchResult?.best_resume_summary || 'N/A'}</h3>
     <ul className="ranking-list">
       {batchResult?.ranking?.length > 0 ? (
-        batchResult.ranking.map((item, idx) => (
-          <li key={idx} className="ranking-item">
-            <strong>🏅 Rank {idx + 1} (Score: {item.score}%)</strong><br />
-            <span className="summary">{item.summary}</span>
-          </li>
-        ))
+        batchResult.ranking.map((item, idx) => {
+          // ✅ Ensure fallback to file name if AI doesn't extract candidate name
+          const nameOrFile = item.candidate_name ? `${item.candidate_name} (${item.file_name})` : `${item.file_name}`;
+
+          return (
+            <li key={idx} className="ranking-item">
+              <strong>🏅 Rank {idx + 1} (Score: {item.score}%)</strong><br />
+              <span className="summary">{nameOrFile} - {item.summary}</span>
+            </li>
+          );
+        })
       ) : (
         <li>No ranking data available.</li>
       )}
