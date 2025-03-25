@@ -139,15 +139,12 @@ const BatchResultDisplay = ({ batchResult }) => (
           // ✅ Ensure correct fallback when AI misses the name
           const candidateName = item.candidate_name && item.candidate_name !== "Unknown Candidate"
             ? item.candidate_name
-            : "Unnamed Candidate";
-          const fileName = item.file_name && item.file_name !== "Unknown File"
-            ? `(${item.file_name})`
-            : "(Unknown File)";
-
+            : item.file_name || "Unnamed Candidate";
+          
           return (
             <li key={idx} className="ranking-item">
               <strong>🏅 Rank {idx + 1} (Score: {item.score}%)</strong><br />
-              <span className="summary">{candidateName} {fileName} - {item.summary}</span>
+              <span className="summary">{candidateName} - {item.summary}</span>
             </li>
           );
         })
