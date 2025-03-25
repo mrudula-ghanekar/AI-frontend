@@ -128,7 +128,7 @@ const ResultDisplay = ({ mode, result }) => (
   </div>
 );
 
-// ✅ Company Mode Batch Result Display (Now Includes Candidate Name + File Name)
+// ✅ Company Mode Batch Result Display (Now Includes Candidate Names)
 const BatchResultDisplay = ({ batchResult }) => (
   <div className="result-box">
     <h2 className="result-title">🏆 Batch Comparison Result</h2>
