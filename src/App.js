@@ -29,9 +29,9 @@ export default function App() {
     onDrop: acceptedFiles => setFiles(acceptedFiles),
     multiple: mode === 'company',
     accept: {
-      'application/pdf': ['.pdf'],
-      'application/msword': ['.doc'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+      "application/pdf": [],
+      "application/msword": [],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": []
     }
   });
 
