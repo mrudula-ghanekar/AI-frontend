@@ -129,6 +129,14 @@ export default function App() {
             Candidate Result
           </p>
 
+          {/* Suitable for Role */}
+          {result.suitableForRole !== undefined && (
+            <div className="section-box">
+              <h3 className="section-title">Suitable for Role?</h3>
+              <p>{result.suitableForRole ? '✅ Yes' : '❌ No'}</p>
+            </div>
+          )}
+
           {/* Strong Points */}
           {result.strongPoints && result.strongPoints.length > 0 && (
             <div className="section-box">
@@ -171,16 +179,31 @@ export default function App() {
       {batchResult && mode === 'company' && (
         <div className="result-box">
           <h2 className="result-title">Batch Comparison Results</h2>
-          <div className="section-box">
-            <h3 className="section-title">Best Resume</h3>
-            <p>{batchResult.bestResume?.name}</p>
-            <h3 className="section-title">Ranked Candidates</h3>
-            <ul>
-              {batchResult?.rankedCandidates?.map((candidate, idx) => (
-                <li key={idx}>{candidate.name}</li>
-              ))}
-            </ul>
-          </div>
+          
+          {/* Best Resume */}
+          {batchResult.bestResume && (
+            <div className="section-box">
+              <h3 className="section-title">Best Resume</h3>
+              <p><strong>Candidate Name:</strong> {batchResult.bestResume.name}</p>
+              <p><strong>File Name:</strong> {batchResult.bestResume.fileName}</p>
+            </div>
+          )}
+
+          {/* Ranked Candidates */}
+          {batchResult.rankedCandidates && batchResult.rankedCandidates.length > 0 && (
+            <div className="section-box">
+              <h3 className="section-title">Ranked Candidates</h3>
+              <ul>
+                {batchResult.rankedCandidates.map((candidate, idx) => (
+                  <li key={idx}>
+                    <strong>{candidate.rank} - {candidate.name}</strong> 
+                    <span>({candidate.fileName})</span>
+                    <p>{candidate.percentageScore}% - {candidate.reason}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </div>
