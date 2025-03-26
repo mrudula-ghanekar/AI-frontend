@@ -26,7 +26,14 @@ export default function App() {
 
   // 📂 Drag and Drop File Selection
   const { getRootProps, getInputProps } = useDropzone({
-    onDrop: acceptedFiles => setFiles(acceptedFiles),
+    onDrop: acceptedFiles => {
+      if (acceptedFiles.length === 0) {
+        setError("⚠️ Invalid file type. Please upload a PDF or DOCX.");
+        return;
+      }
+      setFiles(acceptedFiles);
+      setError(null);
+    },
     multiple: mode === 'company',
     accept: {
       'application/pdf': ['.pdf'],
@@ -37,10 +44,11 @@ export default function App() {
 
   // 🚀 Upload & Analyze Resume(s)
   const handleUpload = async () => {
-    if (!files.length || !role) {
+    if (!files.length || !role.trim()) {
       setError("⚠️ Please select file(s) and enter a job role.");
       return;
     }
+
     setLoading(true);
     setError(null);
 
@@ -49,6 +57,11 @@ export default function App() {
       files.forEach(file => formData.append("files", file));
       formData.append("role", role);
 
+      console.log("🔍 Sending request:", {
+        files: files.map(f => f.name),
+        role: role
+      });
+
       const endpoint = mode === 'company' ? 'compare-batch' : 'analyze';
       const response = await axios.post(
         `${API_BASE_URL}/api/${endpoint}`,
@@ -56,14 +69,18 @@ export default function App() {
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
+      console.log("✅ Response received:", response.data);
+
       if (mode === "company") {
         setBatchResult(response.data || {});
       } else {
         setResult(response.data || {});
       }
     } catch (error) {
+      console.error("❌ API Error:", error.response?.data);
       setError(error.response?.data?.error || "An error occurred. Please try again.");
     }
+    
     setLoading(false);
   };
 
