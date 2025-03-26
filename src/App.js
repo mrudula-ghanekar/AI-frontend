@@ -54,14 +54,23 @@ export default function App() {
 
     try {
       const formData = new FormData();
-      files.forEach(file => formData.append("files", file));
-      formData.append("role", role);
-      formData.append("mode", mode); // ✅ Send mode parameter
+      
+      // ✅ Ensure correct parameter name based on mode
+      if (mode === 'company') {
+        files.forEach(file => formData.append("files", file));
+      } else {
+        formData.append("file", files[0]);  // Single file for Candidate Mode
+      }
 
+      formData.append("role", role);
+      formData.append("mode", mode);
+
+      // ✅ Log Full Request (Check if files are actually added)
       console.log("🔍 Sending request:", {
+        mode,
+        role,
         files: files.map(f => f.name),
-        role: role,
-        mode: mode
+        formData
       });
 
       const endpoint = mode === 'company' ? 'compare-batch' : 'analyze';
@@ -79,7 +88,7 @@ export default function App() {
         setResult(response.data || {});
       }
     } catch (error) {
-      console.error("❌ API Error:", error.response?.data);
+      console.error("❌ API Error:", error.response?.data || error);
       setError(error.response?.data?.error || "An error occurred. Please try again.");
     }
     
@@ -162,5 +171,14 @@ const BatchResultDisplay = ({ batchResult }) => (
         <p>No ranking data available.</p>
       )}
     </div>
+  </div>
+);
+
+const Section = ({ title, data }) => (
+  <div className="section-box">
+    <h3 className="section-title">{title}</h3>
+    <ul>
+      {data.length > 0 ? data.map((point, idx) => <li key={idx}>✅ {point}</li>) : <li>❌ No data available.</li>}
+    </ul>
   </div>
 );
