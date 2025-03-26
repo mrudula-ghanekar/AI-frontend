@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';  
 import { useDropzone } from 'react-dropzone'; 
-import './App.css'
+import './App.css';
 
 export default function App() {
   const [mode, setMode] = useState('candidate'); 
@@ -11,7 +11,7 @@ export default function App() {
   const [batchResult, setBatchResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL ; // Replace with your actual API URL
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; // Replace with your actual API URL
 
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
