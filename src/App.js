@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import axios from 'axios';  // Import axios for making API requests
-import { useDropzone } from 'react-dropzone';  // Import useDropzone for file handling
+import axios from 'axios';  
+import { useDropzone } from 'react-dropzone'; 
 
 export default function App() {
-  const [mode, setMode] = useState('candidate'); // 'candidate' or 'company'
+  const [mode, setMode] = useState('candidate'); 
   const [role, setRole] = useState('');
   const [files, setFiles] = useState([]);
   const [result, setResult] = useState(null);
@@ -12,7 +12,6 @@ export default function App() {
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  // Toggle between Candidate and Company mode
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
@@ -22,7 +21,6 @@ export default function App() {
     setError(null);
   };
 
-  // Handling file upload
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: acceptedFiles => {
       if (acceptedFiles.length === 0) {
@@ -30,7 +28,6 @@ export default function App() {
         return;
       }
 
-      // Validation for company mode (limit number of files)
       if (mode === 'company' && acceptedFiles.length > 10) {
         setError("⚠️ You can upload up to 10 resumes in company mode.");
         return;
@@ -39,7 +36,7 @@ export default function App() {
       setFiles(acceptedFiles);
       setError(null);
     },
-    multiple: mode === 'company', // allow multiple files in company mode
+    multiple: mode === 'company',
     accept: {
       'application/pdf': ['.pdf'],
       'application/msword': ['.doc'],
@@ -47,7 +44,6 @@ export default function App() {
     }
   });
 
-  // Handle file upload and resume analysis
   const handleUpload = async () => {
     if (!files.length || !role.trim()) {
       setError("⚠️ Please select file(s) and enter a job role.");
@@ -59,31 +55,22 @@ export default function App() {
 
     try {
       const formData = new FormData();
-
-      // Add the files based on mode
       if (mode === 'company') {
         files.forEach(file => formData.append("files", file));
       } else {
         formData.append("file", files[0]);
       }
 
-      // Append role and mode to form data
       formData.append("role", role);
       formData.append("mode", mode);
 
-      // Determine endpoint based on mode
       const endpoint = mode === 'company' ? 'compare-batch' : 'analyze';
-      
-      // Make API call
       const response = await axios.post(
         `${API_BASE_URL}/api/${endpoint}`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      console.log(response); // Debugging: check the full API response
-
-      // Parse the response to match UI field names (camelCase)
       const formattedResult = {
         suitableForRole: response.data.suited_for_role === "Yes",
         strongPoints: response.data.strong_points || [],
@@ -150,7 +137,6 @@ export default function App() {
 
       {error && <p className="error-message" aria-live="assertive">{error}</p>}
 
-      {/* Candidate Result Display */}
       {result && mode === 'candidate' && (
         <div className="result-box">
           <h2 className="result-title">📊 Analysis Result</h2>
@@ -158,13 +144,11 @@ export default function App() {
             Candidate Result
           </p>
 
-          {/* Suitable for Role */}
           <div className="section-box">
             <h3 className="section-title">Suitable for Role</h3>
             <p>{result.suitableForRole ? '✔️ Yes' : '❌ No'}</p>
           </div>
 
-          {/* Strong Points */}
           {result.strongPoints && result.strongPoints.length > 0 && (
             <div className="section-box">
               <h3 className="section-title">Strong Points</h3>
@@ -176,7 +160,6 @@ export default function App() {
             </div>
           )}
 
-          {/* Weak Points */}
           {result.weakPoints && result.weakPoints.length > 0 && (
             <div className="section-box">
               <h3 className="section-title">Weak Points</h3>
@@ -188,7 +171,6 @@ export default function App() {
             </div>
           )}
 
-          {/* Improvement Suggestions */}
           {result.improvementSuggestions && result.improvementSuggestions.length > 0 && (
             <div className="section-box">
               <h3 className="section-title">Improvement Suggestions</h3>
@@ -199,31 +181,22 @@ export default function App() {
               </ul>
             </div>
           )}
-
-          {/* Debugging: Log the entire response */}
-          <div className="debug">
-            <h3>Debug Information:</h3>
-            <pre>{JSON.stringify(result, null, 2)}</pre>
-          </div>
         </div>
       )}
 
-      {/* Company Batch Result Display */}
       {batchResult && mode === 'company' && (
         <div className="result-box">
           <h2 className="result-title">Batch Comparison Results</h2>
 
-          {/* Best Resume */}
           <div className="section-box">
             <h3 className="section-title">Best Resume</h3>
             <p>{batchResult.bestResume?.name}</p>
 
-            {/* Ranked Candidates */}
             <h3 className="section-title">Ranked Candidates</h3>
             <ul>
               {batchResult?.rankedCandidates?.map((candidate, idx) => (
                 <li key={idx}>
-                  {candidate.name} (Rank: {candidate.rank} | Score: {candidate.score}%) 
+                  {candidate.name} (Rank: {candidate.rank} | Score: {candidate.score}%)
                 </li>
               ))}
             </ul>
