@@ -74,7 +74,7 @@ const ResumeAnalyzer = ({ mode }) => {
   const [result, setResult] = useState({});
   const [batchResult, setBatchResult] = useState({});
 
-  const API_BASE_URL = "https://your-api-base-url.com"; // Replace with your actual API URL
+  const API_BASE_URL = "https://ai-backend-mg.up.railway.app"; // Replace with your actual API URL
 
   // Handle file selection
   const handleFileChange = (e) => {
