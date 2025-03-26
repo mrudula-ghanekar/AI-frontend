@@ -10,7 +10,7 @@ export default function App() {
   const [batchResult, setBatchResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'; // Replace with your actual API URL
 
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
