@@ -188,14 +188,14 @@ export default function App() {
 
           <div className="section-box">
             <h3 className="section-title">Best Resume</h3>
-            <p>{batchResult.bestResume?.name || 'No best resume available'}</p>
+            <p>{batchResult.best_resume_summary || 'No best resume available'}</p>
 
             <h3 className="section-title">Ranked Candidates</h3>
             <ul>
-              {batchResult?.rankedCandidates?.length ? (
-                batchResult?.rankedCandidates.map((candidate, idx) => (
+              {batchResult?.ranking?.length ? (
+                batchResult?.ranking.map((candidate, idx) => (
                   <li key={idx}>
-                    {candidate.name} (Rank: {candidate.rank} | Score: {candidate.score}%)
+                    {candidate.summary} (Score: {candidate.score}%)
                   </li>
                 ))
               ) : (
