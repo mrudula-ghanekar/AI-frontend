@@ -1,9 +1,3 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useDropzone } from 'react-dropzone';
-import './index.css';
-import './App.css';
-
 export default function App() {
   const [mode, setMode] = useState('candidate'); // 'candidate' or 'company'
   const [role, setRole] = useState('');
@@ -78,10 +72,18 @@ export default function App() {
 
       console.log(response); // Debugging: check the full API response
 
+      // Parse the response to match UI field names (camelCase)
+      const formattedResult = {
+        suitableForRole: response.data.suited_for_role === "Yes",
+        strongPoints: response.data.strong_points || [],
+        weakPoints: response.data.weak_points || [],
+        improvementSuggestions: response.data.improvement_suggestions || [],
+      };
+
       if (mode === 'company') {
         setBatchResult(response.data || {});
       } else {
-        setResult(response.data || {});
+        setResult(formattedResult);
       }
     } catch (error) {
       setError(error.response?.data?.error || "An error occurred. Please try again.");
@@ -135,14 +137,14 @@ export default function App() {
       {result && mode === 'candidate' && (
         <div className="result-box">
           <h2 className="result-title">📊 Analysis Result</h2>
-          <p className={`role-badge ${result.suitedForRole ? 'success' : 'fail'}`}>
+          <p className={`role-badge ${result.suitableForRole ? 'success' : 'fail'}`}>
             Candidate Result
           </p>
 
           {/* Suitable for Role */}
           <div className="section-box">
             <h3 className="section-title">Suitable for Role</h3>
-            <p>{result.suitedForRole ? '✔️ Yes' : '❌ No'}</p>
+            <p>{result.suitableForRole ? '✔️ Yes' : '❌ No'}</p>
           </div>
 
           {/* Strong Points */}
@@ -197,14 +199,14 @@ export default function App() {
           {/* Best Resume */}
           <div className="section-box">
             <h3 className="section-title">Best Resume</h3>
-            <p>{batchResult.bestResume?.name} (Score: {batchResult.bestResume?.score}%)</p>
+            <p>{batchResult.bestResume?.name}</p>
 
             {/* Ranked Candidates */}
             <h3 className="section-title">Ranked Candidates</h3>
             <ul>
               {batchResult?.rankedCandidates?.map((candidate, idx) => (
                 <li key={idx}>
-                  {candidate.name} (Rank: {candidate.rank} | Score: {candidate.score}%) - {candidate.explanation}
+                  {candidate.name} (Rank: {candidate.rank} | Score: {candidate.score}%) 
                 </li>
               ))}
             </ul>
