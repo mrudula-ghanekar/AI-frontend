@@ -1,218 +1,36 @@
-/* Global Styles */
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f7fc;
-  color: #333;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
-
-/* Main Container */
-.container {
-  max-width: 900px;
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-/* Title & Subtitle */
-.title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 10px;
-}
-
-.subtitle {
-  font-size: 16px;
-  color: #7f8c8d;
-  margin-bottom: 20px;
-}
-
-/* Toggle Button */
-.toggle-btn {
-  background-color: #3498db;
-  color: white;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.toggle-btn:hover {
-  background-color: #2980b9;
-}
-
-/* Upload Box */
-.upload-box {
-  margin-top: 20px;
-  padding: 20px;
-  border: 2px dashed #bdc3c7;
-  border-radius: 10px;
-  background-color: #ecf0f1;
-}
-
-.upload-box input[type="text"] {
-  width: 100%;
-  padding: 10px;
-  font-size: 14px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.upload-box input[type="file"] {
-  margin: 10px 0;
-}
-
-.upload-btn {
-  background-color: #27ae60;
-  color: white;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.upload-btn:hover {
-  background-color: #219150;
-}
-
-/* File Preview */
-.file-preview {
-  margin-top: 10px;
-  padding: 10px;
-  background: #dff9fb;
-  border-radius: 5px;
-}
-
-.file-preview ul {
-  list-style: none;
-  padding: 0;
-}
-
-.file-preview li {
-  font-size: 14px;
-  padding: 5px 0;
-}
-
-/* Result Box */
-.result-box {
-  margin-top: 20px;
-  padding: 20px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: left;
-}
-
-.result-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-/* Ranking List */
-.ranking-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.ranking-card {
-  background: #f8f9fa;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.rank-title {
-  font-weight: bold;
-  font-size: 16px;
-  color: #2c3e50;
-}
-
-.score {
-  font-size: 14px;
-  color: #555;
-  margin: 5px 0;
-}
-
-.summary {
-  font-size: 14px;
-  color: #333;
-}
-
-/* Drag & Drop Upload */
+/* 🚀 Improved Drag & Drop File Upload */
 .dropzone {
+  border: 2px dashed #4f46e5;
   padding: 20px;
-  border: 2px dashed #95a5a6;
-  background: #ecf0f1;
-  border-radius: 10px;
-  cursor: pointer;
   text-align: center;
-  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
 }
 
-.dropzone p {
-  color: #7f8c8d;
-  font-size: 14px;
+.dropzone:hover {
+  border-color: #9333ea;
+  background: rgba(255, 255, 255, 0.1);
 }
 
-/* Error Message */
-.error-message {
-  color: red;
-  font-weight: bold;
-  margin-top: 10px;
-}
+/* 🏆 Stylish Resume Ranking Cards */
+.ranking-card:nth-child(1) { border-left-color: #facc15; background: rgba(250, 204, 21, 0.2); } /* Gold */
+.ranking-card:nth-child(2) { border-left-color: #c0c0c0; background: rgba(192, 192, 192, 0.2); } /* Silver */
+.ranking-card:nth-child(3) { border-left-color: #cd7f32; background: rgba(205, 127, 50, 0.2); } /* Bronze */
 
-/* Success Badge */
-.role-badge {
-  font-size: 14px;
-  font-weight: bold;
-  padding: 5px 10px;
-  border-radius: 5px;
-  display: inline-block;
-  margin-bottom: 10px;
-}
-
-.success {
-  background-color: #2ecc71;
+/* 🚀 Button & Input Enhancements */
+.upload-btn, .toggle-btn {
+  background: linear-gradient(45deg, #4f46e5, #9333ea);
+  padding: 12px 20px;
+  border-radius: 8px;
   color: white;
-}
-
-.fail {
-  background-color: #e74c3c;
-  color: white;
-}
-
-/* Section Box */
-.section-box {
-  margin-top: 15px;
-}
-
-.section-title {
-  font-size: 16px;
+  font-size: 1.1rem;
   font-weight: bold;
-  margin-bottom: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
 }
 
-.section-box ul {
-  list-style: none;
-  padding: 0;
-}
-
-.section-box li {
-  font-size: 14px;
-  padding: 3px 0;
+.upload-btn:hover, .toggle-btn:hover {
+  transform: scale(1.05);
 }

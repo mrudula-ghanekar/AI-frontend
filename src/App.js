@@ -29,9 +29,9 @@ export default function App() {
     onDrop: acceptedFiles => setFiles(acceptedFiles),
     multiple: mode === 'company',
     accept: {
-      "application/pdf": [],
-      "application/msword": [],
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": []
+      'application/pdf': ['.pdf'],
+      'application/msword': ['.doc'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
     }
   });
 
@@ -139,6 +139,7 @@ const BatchResultDisplay = ({ batchResult }) => (
           <div key={idx} className="ranking-card">
             <h4 className="rank-title">🏅 Rank {idx + 1}</h4>
             <p className="score">Score: <strong>{item.score}%</strong></p>
+            <div className="progress-bar" style={{ width: `${item.score}%` }}></div>
             <p className="summary">{item.candidate_name || item.file_name} - {item.summary}</p>
           </div>
         ))
