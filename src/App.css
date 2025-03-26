@@ -1,36 +1,28 @@
-/* 🚀 Improved Drag & Drop File Upload */
-.dropzone {
-  border: 2px dashed #4f46e5;
-  padding: 20px;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  transition: all 0.3s ease-in-out;
-  cursor: pointer;
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
 }
 
-.dropzone:hover {
-  border-color: #9333ea;
-  background: rgba(255, 255, 255, 0.1);
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
-/* 🏆 Stylish Resume Ranking Cards */
-.ranking-card:nth-child(1) { border-left-color: #facc15; background: rgba(250, 204, 21, 0.2); } /* Gold */
-.ranking-card:nth-child(2) { border-left-color: #c0c0c0; background: rgba(192, 192, 192, 0.2); } /* Silver */
-.ranking-card:nth-child(3) { border-left-color: #cd7f32; background: rgba(205, 127, 50, 0.2); } /* Bronze */
-
-/* 🚀 Button & Input Enhancements */
-.upload-btn, .toggle-btn {
-  background: linear-gradient(45deg, #4f46e5, #9333ea);
-  padding: 12px 20px;
-  border-radius: 8px;
+button {
+  background-color: #6a0dad;
   color: white;
-  font-size: 1.1rem;
-  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  transition: 0.3s;
 }
 
-.upload-btn:hover, .toggle-btn:hover {
-  transform: scale(1.05);
+button:hover {
+  background-color: #5a0ca8;
 }
