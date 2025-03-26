@@ -56,10 +56,12 @@ export default function App() {
       const formData = new FormData();
       files.forEach(file => formData.append("files", file));
       formData.append("role", role);
+      formData.append("mode", mode); // ✅ Send mode parameter
 
       console.log("🔍 Sending request:", {
         files: files.map(f => f.name),
-        role: role
+        role: role,
+        mode: mode
       });
 
       const endpoint = mode === 'company' ? 'compare-batch' : 'analyze';
@@ -140,9 +142,6 @@ const ResultDisplay = ({ mode, result }) => (
     <Section title="💪 Strong Points" data={result?.strong_points || []} />
     <Section title="⚠️ Weak Points" data={result?.weak_points || []} />
     <Section title="💡 Improvement Suggestions" data={result?.improvement_suggestions || []} />
-    {mode === 'company' && result?.comparison_score && (
-      <Section title="📊 Comparison Score" data={[result.comparison_score]} />
-    )}
   </div>
 );
 
@@ -156,7 +155,6 @@ const BatchResultDisplay = ({ batchResult }) => (
           <div key={idx} className="ranking-card">
             <h4 className="rank-title">🏅 Rank {idx + 1}</h4>
             <p className="score">Score: <strong>{item.score}%</strong></p>
-            <div className="progress-bar" style={{ width: `${item.score}%` }}></div>
             <p className="summary">{item.candidate_name || item.file_name} - {item.summary}</p>
           </div>
         ))
@@ -164,14 +162,5 @@ const BatchResultDisplay = ({ batchResult }) => (
         <p>No ranking data available.</p>
       )}
     </div>
-  </div>
-);
-
-const Section = ({ title, data }) => (
-  <div className="section-box">
-    <h3 className="section-title">{title}</h3>
-    <ul>
-      {data.length > 0 ? data.map((point, idx) => <li key={idx}>✅ {point}</li>) : <li>❌ No data available.</li>}
-    </ul>
   </div>
 );
