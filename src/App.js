@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';  
 import { useDropzone } from 'react-dropzone'; 
-
+import './App.css'
 export default function App() {
   const [mode, setMode] = useState('candidate'); 
   const [role, setRole] = useState('');

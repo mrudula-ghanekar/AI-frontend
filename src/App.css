@@ -1,3 +1,10 @@
+/* General Reset for Consistency */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 /* Container for the whole app */
 .container {
   max-width: 900px;
@@ -14,6 +21,7 @@
   font-size: 36px;
   text-align: center;
   color: #2c3e50;
+  margin-bottom: 10px;
 }
 
 .subtitle {
@@ -62,6 +70,11 @@
   border-radius: 5px;
   text-align: center;
   cursor: pointer;
+}
+
+.dropzone p {
+  color: #3498db;
+  font-weight: bold;
 }
 
 .file-preview {
@@ -138,4 +151,29 @@
   padding: 10px;
   border-radius: 5px;
   margin-top: 30px;
+}
+
+.debug pre {
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .input-field,
+  .upload-btn,
+  .toggle-btn {
+    padding: 8px;
+    font-size: 14px;
+  }
 }
