@@ -14,7 +14,6 @@ export default function App() {
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  // Toggle between candidate and company mode
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
@@ -24,7 +23,6 @@ export default function App() {
     setError(null);
   };
 
-  // Dropzone setup for file uploads
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: acceptedFiles => {
       if (acceptedFiles.length === 0) {
@@ -42,7 +40,6 @@ export default function App() {
     }
   });
 
-  // Handle file upload and API call
   const handleUpload = async () => {
     if (!files.length || !role.trim()) {
       setError("⚠️ Please select file(s) and enter a job role.");
@@ -124,49 +121,45 @@ export default function App() {
 
       {error && <p className="error-message">{error}</p>}
 
-      {/* Result Display */}
-      {result && (
+      {/* Candidate Result Display */}
+      {result && mode === 'candidate' && (
         <div className="result-box">
           <h2 className="result-title">📊 Analysis Result</h2>
           <p className={`role-badge ${result.success ? 'success' : 'fail'}`}>
-            {mode === 'candidate' ? 'Candidate Result' : 'Company Result'}
+            Candidate Result
           </p>
 
-          {mode === 'candidate' ? (
-            <>
-              <div className="section-box">
-                <h3 className="section-title">Strong Points</h3>
-                <ul>
-                  {result?.strongPoints?.map((point, idx) => (
-                    <li key={idx}>{point}</li>
-                  ))}
-                </ul>
-              </div>
-              <div className="section-box">
-                <h3 className="section-title">Weak Points</h3>
-                <ul>
-                  {result?.weakPoints?.map((point, idx) => (
-                    <li key={idx}>{point}</li>
-                  ))}
-                </ul>
-              </div>
-              <div className="section-box">
-                <h3 className="section-title">Improvement Suggestions</h3>
-                <ul>
-                  {result?.improvementSuggestions?.map((point, idx) => (
-                    <li key={idx}>{point}</li>
-                  ))}
-                </ul>
-              </div>
-            </>
-          ) : (
+          {/* Strong Points */}
+          {result.strongPoints && result.strongPoints.length > 0 && (
             <div className="section-box">
-              <h3 className="section-title">Best Resume</h3>
-              <p>{result.bestResume?.name}</p>
-              <h3 className="section-title">Ranked Candidates</h3>
+              <h3 className="section-title">Strong Points</h3>
               <ul>
-                {result?.rankedCandidates?.map((candidate, idx) => (
-                  <li key={idx}>{candidate.name}</li>
+                {result.strongPoints.map((point, idx) => (
+                  <li key={idx}>{point}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Weak Points */}
+          {result.weakPoints && result.weakPoints.length > 0 && (
+            <div className="section-box">
+              <h3 className="section-title">Weak Points</h3>
+              <ul>
+                {result.weakPoints.map((point, idx) => (
+                  <li key={idx}>{point}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Improvement Suggestions */}
+          {result.improvementSuggestions && result.improvementSuggestions.length > 0 && (
+            <div className="section-box">
+              <h3 className="section-title">Improvement Suggestions</h3>
+              <ul>
+                {result.improvementSuggestions.map((point, idx) => (
+                  <li key={idx}>{point}</li>
                 ))}
               </ul>
             </div>
@@ -174,8 +167,8 @@ export default function App() {
         </div>
       )}
 
-      {/* Batch Result Display */}
-      {batchResult && (
+      {/* Company Batch Result Display */}
+      {batchResult && mode === 'company' && (
         <div className="result-box">
           <h2 className="result-title">Batch Comparison Results</h2>
           <div className="section-box">
