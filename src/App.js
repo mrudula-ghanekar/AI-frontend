@@ -76,7 +76,7 @@ export default function App() {
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      console.log(response); // Debugging: check the API response
+      console.log(response); // Debugging: check the full API response
 
       if (mode === 'company') {
         setBatchResult(response.data || {});
@@ -180,6 +180,12 @@ export default function App() {
               </ul>
             </div>
           )}
+
+          {/* Debugging: Log the entire response */}
+          <div className="debug">
+            <h3>Debug Information:</h3>
+            <pre>{JSON.stringify(result, null, 2)}</pre>
+          </div>
         </div>
       )}
 
