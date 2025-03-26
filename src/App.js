@@ -78,7 +78,7 @@ export default function App() {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            "Authorization": `Bearer YOUR_AUTH_TOKEN_HERE`,  // Add authorization token if needed
+            // Removed Authorization header since it's not needed
           }
         }
       );
