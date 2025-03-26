@@ -4,14 +4,14 @@ import { useDropzone } from 'react-dropzone';
 import './App.css';
 
 export default function App() {
-  const [mode, setMode] = useState('candidate');
+  const [mode, setMode] = useState('candidate');  // candidate or company mode
   const [role, setRole] = useState('');
   const [files, setFiles] = useState([]);
   const [result, setResult] = useState(null);
   const [batchResult, setBatchResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; // Replace with your actual API URL
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;  // API base URL
 
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
@@ -22,6 +22,7 @@ export default function App() {
     setError(null);
   };
 
+  // Configure Dropzone for file uploads
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: acceptedFiles => {
       if (acceptedFiles.length === 0) {
@@ -37,7 +38,7 @@ export default function App() {
       setFiles(acceptedFiles);
       setError(null);
     },
-    multiple: mode === 'company',
+    multiple: mode === 'company',  // Enable multiple files for company mode
     accept: {
       'application/pdf': ['.pdf'],
       'application/msword': ['.doc'],
@@ -45,6 +46,7 @@ export default function App() {
     }
   });
 
+  // Handle the upload action
   const handleUpload = async () => {
     if (!files.length || !role.trim()) {
       setError("⚠️ Please select file(s) and enter a job role.");
@@ -56,10 +58,12 @@ export default function App() {
 
     try {
       const formData = new FormData();
+
       if (mode === 'company') {
+        // For company mode, append multiple files
         files.forEach(file => formData.append("files", file));
       } else {
-        formData.append("file", files[0]);
+        formData.append("file", files[0]);  // For candidate mode, just one file
       }
 
       formData.append("role", role);
@@ -78,16 +82,17 @@ export default function App() {
         }
       );
 
-      const formattedResult = {
-        suitableForRole: response.data.suited_for_role === "Yes",
-        strongPoints: response.data.strong_points || [],
-        weakPoints: response.data.weak_points || [],
-        improvementSuggestions: response.data.improvement_suggestions || [],
-      };
-
+      // For company mode, process the batch result
       if (mode === 'company') {
         setBatchResult(response.data || {});
       } else {
+        // For candidate mode, process the result for the individual resume
+        const formattedResult = {
+          suitableForRole: response.data.suited_for_role === "Yes",
+          strongPoints: response.data.strong_points || [],
+          weakPoints: response.data.weak_points || [],
+          improvementSuggestions: response.data.improvement_suggestions || [],
+        };
         setResult(formattedResult);
       }
     } catch (error) {
@@ -144,53 +149,16 @@ export default function App() {
 
       {error && <p className="error-message" aria-live="assertive">{error}</p>}
 
+      {/* Candidate Mode Result Display */}
       {result && mode === 'candidate' && (
         <div className="result-box">
           <h2 className="result-title">📊 Analysis Result</h2>
-          <p className={`role-badge ${result.suitableForRole ? 'success' : 'fail'}`}>
-            Candidate Result
-          </p>
-
-          <div className="section-box">
-            <h3 className="section-title">Suitable for Role</h3>
-            <p>{result.suitableForRole ? '✔️ Yes' : '❌ No'}</p>
-          </div>
-
-          {result.strongPoints && result.strongPoints.length > 0 && (
-            <div className="section-box">
-              <h3 className="section-title">Strong Points</h3>
-              <ul>
-                {result.strongPoints.map((point, idx) => (
-                  <li key={idx}>{point}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {result.weakPoints && result.weakPoints.length > 0 && (
-            <div className="section-box">
-              <h3 className="section-title">Weak Points</h3>
-              <ul>
-                {result.weakPoints.map((point, idx) => (
-                  <li key={idx}>{point}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {result.improvementSuggestions && result.improvementSuggestions.length > 0 && (
-            <div className="section-box">
-              <h3 className="section-title">Improvement Suggestions</h3>
-              <ul>
-                {result.improvementSuggestions.map((point, idx) => (
-                  <li key={idx}>{point}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <p className={`role-badge ${result.suitableForRole ? 'success' : 'fail'}`}>Candidate Result</p>
+          {/* Display results for candidate */}
         </div>
       )}
 
+      {/* Company Mode Result Display */}
       {batchResult && mode === 'company' && (
         <div className="result-box">
           <h2 className="result-title">Batch Comparison Results</h2>
