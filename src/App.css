@@ -6,8 +6,8 @@
 
 body {
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  background-color: #f5f7fa; /* Soft light gray background */
-  color: #333; /* Dark text for good readability */
+  background-color: #f5f7fa;
+  color: #333;
 }
 
 .container {
@@ -22,21 +22,21 @@ body {
 .title {
   text-align: center;
   font-size: 2.5rem;
-  color: #003366; /* Professional deep blue for titles */
+  color: #003366;
 }
 
 .subtitle {
   text-align: center;
   font-size: 1.2rem;
   margin-bottom: 20px;
-  color: #6b7280; /* Soft gray for subtitles */
+  color: #6b7280;
 }
 
 .toggle-btn {
   display: block;
   width: 100%;
   padding: 12px;
-  background-color: #003366; /* Professional deep blue */
+  background-color: #003366;
   color: white;
   border: none;
   border-radius: 8px;
@@ -47,7 +47,7 @@ body {
 }
 
 .toggle-btn:hover {
-  background-color: #002244; /* Slightly darker blue for hover */
+  background-color: #002244;
 }
 
 .upload-box {
@@ -84,7 +84,7 @@ body {
 
 .upload-btn {
   padding: 12px 20px;
-  background-color: #003366; /* Professional deep blue */
+  background-color: #003366;
   color: white;
   border: none;
   border-radius: 8px;
@@ -93,11 +93,11 @@ body {
 }
 
 .upload-btn:disabled {
-  background-color: #ccc; /* Soft gray for disabled state */
+  background-color: #ccc;
 }
 
 .error-message {
-  color: #e11d48; /* Bright red for errors */
+  color: #e11d48;
   text-align: center;
   font-size: 1.1rem;
 }
@@ -112,7 +112,7 @@ body {
 
 .result-title {
   font-size: 1.6rem;
-  color: #003366; /* Professional deep blue for result titles */
+  color: #003366;
   margin-bottom: 20px;
 }
 
@@ -122,19 +122,19 @@ body {
 
 .section-title {
   font-size: 1.3rem;
-  color: #003366; /* Professional deep blue for section titles */
+  color: #003366;
 }
 
 .role-badge {
   font-weight: bold;
   font-size: 1.2rem;
-  color: #003366; /* Professional deep blue for badges */
+  color: #003366;
 }
 
 .success {
-  color: #10b981; /* Soft green for success messages */
+  color: #10b981;
 }
 
 .fail {
-  color: #e11d48; /* Bright red for failure messages */
+  color: #e11d48;
 }
