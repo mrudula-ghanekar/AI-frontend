@@ -135,14 +135,14 @@ export default function App() {
       {result && mode === 'candidate' && (
         <div className="result-box">
           <h2 className="result-title">📊 Analysis Result</h2>
-          <p className={`role-badge ${result.success ? 'success' : 'fail'}`}>
+          <p className={`role-badge ${result.suitedForRole ? 'success' : 'fail'}`}>
             Candidate Result
           </p>
 
           {/* Suitable for Role */}
           <div className="section-box">
             <h3 className="section-title">Suitable for Role</h3>
-            <p>{result.suitableForRole ? '✔️ Yes' : '❌ No'}</p>
+            <p>{result.suitedForRole ? '✔️ Yes' : '❌ No'}</p>
           </div>
 
           {/* Strong Points */}
@@ -197,14 +197,14 @@ export default function App() {
           {/* Best Resume */}
           <div className="section-box">
             <h3 className="section-title">Best Resume</h3>
-            <p>{batchResult.bestResume?.name}</p>
+            <p>{batchResult.bestResume?.name} (Score: {batchResult.bestResume?.score}%)</p>
 
             {/* Ranked Candidates */}
             <h3 className="section-title">Ranked Candidates</h3>
             <ul>
               {batchResult?.rankedCandidates?.map((candidate, idx) => (
                 <li key={idx}>
-                  {candidate.name} (Rank: {candidate.rank} | Score: {candidate.score}%) 
+                  {candidate.name} (Rank: {candidate.rank} | Score: {candidate.score}%) - {candidate.explanation}
                 </li>
               ))}
             </ul>
