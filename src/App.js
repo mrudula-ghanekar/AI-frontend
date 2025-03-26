@@ -5,7 +5,7 @@ import './index.css';
 import './App.css';
 
 export default function App() {
-  const [mode, setMode] = useState('candidate');
+  const [mode, setMode] = useState('candidate'); // 'candidate' or 'company'
   const [role, setRole] = useState('');
   const [files, setFiles] = useState([]);
   const [result, setResult] = useState(null);
@@ -14,6 +14,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
+  // Toggle between Candidate and Company mode
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
@@ -23,6 +24,7 @@ export default function App() {
     setError(null);
   };
 
+  // Handling file upload
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: acceptedFiles => {
       if (acceptedFiles.length === 0) {
@@ -32,7 +34,7 @@ export default function App() {
       setFiles(acceptedFiles);
       setError(null);
     },
-    multiple: mode === 'company',
+    multiple: mode === 'company', // allow multiple files in company mode
     accept: {
       'application/pdf': ['.pdf'],
       'application/msword': ['.doc'],
@@ -40,6 +42,7 @@ export default function App() {
     }
   });
 
+  // Handle file upload and resume analysis
   const handleUpload = async () => {
     if (!files.length || !role.trim()) {
       setError("⚠️ Please select file(s) and enter a job role.");
@@ -52,23 +55,30 @@ export default function App() {
     try {
       const formData = new FormData();
 
+      // Add the files based on mode
       if (mode === 'company') {
         files.forEach(file => formData.append("files", file));
       } else {
         formData.append("file", files[0]);
       }
 
+      // Append role and mode to form data
       formData.append("role", role);
       formData.append("mode", mode);
 
+      // Determine endpoint based on mode
       const endpoint = mode === 'company' ? 'compare-batch' : 'analyze';
+      
+      // Make API call
       const response = await axios.post(
         `${API_BASE_URL}/api/${endpoint}`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      if (mode === "company") {
+      console.log(response); // Debugging: check the API response
+
+      if (mode === 'company') {
         setBatchResult(response.data || {});
       } else {
         setResult(response.data || {});
@@ -130,12 +140,10 @@ export default function App() {
           </p>
 
           {/* Suitable for Role */}
-          {result.suitableForRole !== undefined && (
-            <div className="section-box">
-              <h3 className="section-title">Suitable for Role?</h3>
-              <p>{result.suitableForRole ? '✅ Yes' : '❌ No'}</p>
-            </div>
-          )}
+          <div className="section-box">
+            <h3 className="section-title">Suitable for Role</h3>
+            <p>{result.suitableForRole ? '✔️ Yes' : '❌ No'}</p>
+          </div>
 
           {/* Strong Points */}
           {result.strongPoints && result.strongPoints.length > 0 && (
@@ -179,31 +187,22 @@ export default function App() {
       {batchResult && mode === 'company' && (
         <div className="result-box">
           <h2 className="result-title">Batch Comparison Results</h2>
-          
-          {/* Best Resume */}
-          {batchResult.bestResume && (
-            <div className="section-box">
-              <h3 className="section-title">Best Resume</h3>
-              <p><strong>Candidate Name:</strong> {batchResult.bestResume.name}</p>
-              <p><strong>File Name:</strong> {batchResult.bestResume.fileName}</p>
-            </div>
-          )}
 
-          {/* Ranked Candidates */}
-          {batchResult.rankedCandidates && batchResult.rankedCandidates.length > 0 && (
-            <div className="section-box">
-              <h3 className="section-title">Ranked Candidates</h3>
-              <ul>
-                {batchResult.rankedCandidates.map((candidate, idx) => (
-                  <li key={idx}>
-                    <strong>{candidate.rank} - {candidate.name}</strong> 
-                    <span>({candidate.fileName})</span>
-                    <p>{candidate.percentageScore}% - {candidate.reason}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {/* Best Resume */}
+          <div className="section-box">
+            <h3 className="section-title">Best Resume</h3>
+            <p>{batchResult.bestResume?.name}</p>
+
+            {/* Ranked Candidates */}
+            <h3 className="section-title">Ranked Candidates</h3>
+            <ul>
+              {batchResult?.rankedCandidates?.map((candidate, idx) => (
+                <li key={idx}>
+                  {candidate.name} (Rank: {candidate.rank} | Score: {candidate.score}%) 
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
     </div>
