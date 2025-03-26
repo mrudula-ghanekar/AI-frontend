@@ -1,3 +1,7 @@
+import React, { useState } from 'react';
+import axios from 'axios';  // Import axios for making API requests
+import { useDropzone } from 'react-dropzone';  // Import useDropzone for file handling
+
 export default function App() {
   const [mode, setMode] = useState('candidate'); // 'candidate' or 'company'
   const [role, setRole] = useState('');
@@ -25,6 +29,13 @@ export default function App() {
         setError("⚠️ Invalid file type. Please upload a PDF or DOCX.");
         return;
       }
+
+      // Validation for company mode (limit number of files)
+      if (mode === 'company' && acceptedFiles.length > 10) {
+        setError("⚠️ You can upload up to 10 resumes in company mode.");
+        return;
+      }
+
       setFiles(acceptedFiles);
       setError(null);
     },
@@ -86,7 +97,13 @@ export default function App() {
         setResult(formattedResult);
       }
     } catch (error) {
-      setError(error.response?.data?.error || "An error occurred. Please try again.");
+      if (error.response) {
+        setError(`⚠️ ${error.response?.data?.error || 'An unexpected error occurred. Please try again.'}`);
+      } else if (error.request) {
+        setError('⚠️ Network error. Please check your connection.');
+      } else {
+        setError('⚠️ Something went wrong. Please try again.');
+      }
     }
 
     setLoading(false);
@@ -131,7 +148,7 @@ export default function App() {
         </button>
       </div>
 
-      {error && <p className="error-message">{error}</p>}
+      {error && <p className="error-message" aria-live="assertive">{error}</p>}
 
       {/* Candidate Result Display */}
       {result && mode === 'candidate' && (
