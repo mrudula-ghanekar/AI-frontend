@@ -5,48 +5,49 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background-color: #fafafa;
-  color: #333;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f5f7fa; /* Soft light gray background */
+  color: #333; /* Dark text for good readability */
 }
 
 .container {
   width: 80%;
   margin: auto;
-  padding: 20px;
+  padding: 30px;
   background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .title {
   text-align: center;
   font-size: 2.5rem;
-  color: #4b9e9b;  /* Professional teal */
+  color: #1e3a8a; /* Deep blue for a professional look */
 }
 
 .subtitle {
   text-align: center;
   font-size: 1.2rem;
   margin-bottom: 20px;
-  color: #666;
+  color: #6b7280; /* Soft gray for subtitles */
 }
 
 .toggle-btn {
   display: block;
   width: 100%;
-  padding: 10px;
-  background-color: #4b9e9b; /* Professional teal */
+  padding: 12px;
+  background-color: #1e3a8a; /* Deep blue */
   color: white;
   border: none;
-  border-radius: 5px;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
   margin-bottom: 20px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .toggle-btn:hover {
-  background-color: #397d77; /* Darker teal on hover */
+  background-color: #1e40af; /* Slightly darker blue for hover */
 }
 
 .upload-box {
@@ -56,18 +57,19 @@ body {
 
 .input-field {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin: 10px 0;
-  border-radius: 5px;
+  border-radius: 8px;
   border: 1px solid #ddd;
   font-size: 1rem;
+  color: #333;
 }
 
 .dropzone {
   width: 100%;
   padding: 20px;
   border: 2px dashed #ddd;
-  border-radius: 5px;
+  border-radius: 8px;
   margin-bottom: 20px;
   cursor: pointer;
 }
@@ -81,35 +83,36 @@ body {
 }
 
 .upload-btn {
-  padding: 10px 20px;
-  background-color: #4b9e9b; /* Professional teal */
+  padding: 12px 20px;
+  background-color: #1e3a8a; /* Deep blue */
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .upload-btn:disabled {
-  background-color: #ddd;
+  background-color: #ccc; /* Soft gray for disabled state */
 }
 
 .error-message {
-  color: #e74c3c; /* Red for error */
+  color: #e11d48; /* Bright red for errors */
   text-align: center;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 
 .result-box {
   margin-top: 30px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .result-title {
-  font-size: 1.5rem;
-  color: #4b9e9b; /* Professional teal */
+  font-size: 1.6rem;
+  color: #1e3a8a; /* Deep blue for result titles */
   margin-bottom: 20px;
 }
 
@@ -118,19 +121,20 @@ body {
 }
 
 .section-title {
-  font-size: 1.2rem;
-  color: #4b9e9b; /* Professional teal */
+  font-size: 1.3rem;
+  color: #1e3a8a; /* Deep blue for section titles */
 }
 
 .role-badge {
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  color: #1e40af; /* Slightly darker blue for badges */
 }
 
 .success {
-  color: #2ecc71; /* Green for success */
+  color: #10b981; /* Soft green for success messages */
 }
 
 .fail {
-  color: #e74c3c; /* Red for failure */
+  color: #e11d48; /* Bright red for failure messages */
 }
