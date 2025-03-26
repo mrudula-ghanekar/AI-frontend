@@ -78,23 +78,32 @@ export default function App() {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            // Removed Authorization header since it's not needed
           }
         }
       );
 
+      console.log("Response from API:", response.data); // Debugging response
+
       // For company mode, process the batch result
       if (mode === 'company') {
-        setBatchResult(response.data || {});
+        if (response.data) {
+          setBatchResult(response.data);
+        } else {
+          setError('⚠️ No results returned for the company mode.');
+        }
       } else {
         // For candidate mode, process the result for the individual resume
-        const formattedResult = {
-          suitableForRole: response.data.suited_for_role === "Yes",
-          strongPoints: response.data.strong_points || [],
-          weakPoints: response.data.weak_points || [],
-          improvementSuggestions: response.data.improvement_suggestions || [],
-        };
-        setResult(formattedResult);
+        if (response.data) {
+          const formattedResult = {
+            suitableForRole: response.data.suited_for_role === "Yes",
+            strongPoints: response.data.strong_points || [],
+            weakPoints: response.data.weak_points || [],
+            improvementSuggestions: response.data.improvement_suggestions || [],
+          };
+          setResult(formattedResult);
+        } else {
+          setError('⚠️ No results returned for the candidate mode.');
+        }
       }
     } catch (error) {
       if (error.response) {
@@ -154,7 +163,9 @@ export default function App() {
       {result && mode === 'candidate' && (
         <div className="result-box">
           <h2 className="result-title">📊 Analysis Result</h2>
-          <p className={`role-badge ${result.suitableForRole ? 'success' : 'fail'}`}>Candidate Result</p>
+          <p className={`role-badge ${result.suitableForRole ? 'success' : 'fail'}`}>
+            {result.suitableForRole ? 'Suitable for Role' : 'Not Suitable for Role'}
+          </p>
           <h3>Strong Points</h3>
           <ul>
             {result.strongPoints.map((point, idx) => <li key={idx}>{point}</li>)}
@@ -177,15 +188,19 @@ export default function App() {
 
           <div className="section-box">
             <h3 className="section-title">Best Resume</h3>
-            <p>{batchResult.bestResume?.name}</p>
+            <p>{batchResult.bestResume?.name || 'No best resume available'}</p>
 
             <h3 className="section-title">Ranked Candidates</h3>
             <ul>
-              {batchResult?.rankedCandidates?.map((candidate, idx) => (
-                <li key={idx}>
-                  {candidate.name} (Rank: {candidate.rank} | Score: {candidate.score}%)
-                </li>
-              ))}
+              {batchResult?.rankedCandidates?.length ? (
+                batchResult?.rankedCandidates.map((candidate, idx) => (
+                  <li key={idx}>
+                    {candidate.name} (Rank: {candidate.rank} | Score: {candidate.score}%)
+                  </li>
+                ))
+              ) : (
+                <li>No candidates ranked yet</li>
+              )}
             </ul>
           </div>
         </div>
