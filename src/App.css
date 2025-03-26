@@ -24,7 +24,7 @@ body {
 .title {
   text-align: center;
   font-size: 3.2rem;
-  color: #2c3e50; /* A modern, professional dark gray-blue */
+  color: #2c3e50;
   margin-bottom: 25px;
   font-weight: 700;
 }
@@ -33,14 +33,14 @@ body {
   text-align: center;
   font-size: 1.3rem;
   margin-bottom: 30px;
-  color: #7f8c8d; /* Soft gray for better readability */
+  color: #7f8c8d;
 }
 
 .toggle-btn {
   display: block;
   width: 100%;
   padding: 16px;
-  background-color: #2980b9; /* Strong blue for attention-grabbing */
+  background-color: #2980b9;
   color: white;
   border: none;
   border-radius: 10px;
@@ -51,7 +51,7 @@ body {
 }
 
 .toggle-btn:hover {
-  background-color: #1c658c; /* Slightly darker blue for hover effect */
+  background-color: #1c658c;
   transform: translateY(-2px);
 }
 
