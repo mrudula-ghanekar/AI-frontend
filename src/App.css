@@ -5,53 +5,54 @@
 }
 
 body {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  background-color: #f5f7fa;
+  font-family: 'Arial', sans-serif;
+  background-color: #e8f0f9; /* Light pastel blue for a soothing background */
   color: #333;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .container {
-  width: 90%;
+  width: 85%;
   max-width: 1200px;
   margin: auto;
-  padding: 30px;
+  padding: 40px;
   background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .title {
   text-align: center;
-  font-size: 3rem;
-  color: #003366;
-  margin-bottom: 20px;
+  font-size: 3.2rem;
+  color: #2c3e50; /* A modern, professional dark gray-blue */
+  margin-bottom: 25px;
   font-weight: 700;
 }
 
 .subtitle {
   text-align: center;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   margin-bottom: 30px;
-  color: #6b7280;
+  color: #7f8c8d; /* Soft gray for better readability */
 }
 
 .toggle-btn {
   display: block;
   width: 100%;
-  padding: 15px;
-  background-color: #003366;
+  padding: 16px;
+  background-color: #2980b9; /* Strong blue for attention-grabbing */
   color: white;
   border: none;
   border-radius: 10px;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   margin-bottom: 20px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .toggle-btn:hover {
-  background-color: #002244;
+  background-color: #1c658c; /* Slightly darker blue for hover effect */
+  transform: translateY(-2px);
 }
 
 .upload-box {
@@ -62,8 +63,8 @@ body {
 .input-field {
   width: 100%;
   padding: 15px;
-  margin: 15px 0;
-  border-radius: 8px;
+  margin: 20px 0;
+  border-radius: 10px;
   border: 1px solid #ddd;
   font-size: 1.1rem;
   color: #333;
@@ -71,15 +72,15 @@ body {
 }
 
 .input-field:focus {
-  border-color: #003366;
+  border-color: #2980b9;
   outline: none;
 }
 
 .dropzone {
   width: 100%;
-  padding: 25px;
-  border: 2px dashed #ddd;
-  border-radius: 10px;
+  padding: 30px;
+  border: 2px dashed #ccc;
+  border-radius: 12px;
   margin-bottom: 30px;
   cursor: pointer;
   text-align: center;
@@ -87,30 +88,31 @@ body {
 }
 
 .dropzone:hover {
-  border-color: #003366;
+  border-color: #2980b9;
 }
 
 .upload-btn {
-  padding: 15px 25px;
-  background-color: #003366;
+  padding: 16px 28px;
+  background-color: #2980b9;
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 1.2rem;
-  transition: background-color 0.3s ease;
+  font-size: 1.3rem;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .upload-btn:hover {
-  background-color: #002244;
+  background-color: #1c658c;
+  transform: translateY(-2px);
 }
 
 .upload-btn:disabled {
-  background-color: #ccc;
+  background-color: #bdc3c7;
 }
 
 .error-message {
-  color: #e11d48;
+  color: #e74c3c;
   text-align: center;
   font-size: 1.2rem;
   margin-top: 20px;
@@ -120,13 +122,13 @@ body {
   margin-top: 40px;
   padding: 30px;
   background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .result-title {
-  font-size: 1.8rem;
-  color: #003366;
+  font-size: 1.9rem;
+  color: #2c3e50;
   margin-bottom: 25px;
   font-weight: 700;
 }
@@ -136,27 +138,27 @@ body {
 }
 
 .section-title {
-  font-size: 1.5rem;
-  color: #003366;
+  font-size: 1.6rem;
+  color: #2c3e50;
   margin-bottom: 15px;
   font-weight: 600;
 }
 
 .role-badge {
   font-weight: bold;
-  font-size: 1.2rem;
-  color: #003366;
-  background-color: #e0e7ff;
-  padding: 8px 12px;
-  border-radius: 10px;
+  font-size: 1.3rem;
+  color: #2c3e50;
+  background-color: #ecf0f1;
+  padding: 10px 14px;
+  border-radius: 12px;
 }
 
 .success {
-  color: #10b981;
+  color: #2ecc71;
   font-weight: 600;
 }
 
 .fail {
-  color: #e11d48;
+  color: #e74c3c;
   font-weight: 600;
 }
