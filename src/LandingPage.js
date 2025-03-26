@@ -1,8 +1,8 @@
 import React from "react";
-import { useRouter } from "next/router";
+import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white p-6">
@@ -14,7 +14,7 @@ const LandingPage = () => {
         Optimize your resume, match it with job roles, and get AI-driven insights to land your dream job!
       </p>
       <button
-        onClick={() => router.push("/analyze")}
+        onClick={() => navigate("/analyze")}
         className="bg-white text-blue-600 px-6 py-3 rounded-full text-lg font-semibold shadow-md hover:bg-gray-200 transition"
       >
         Analyze Resume Now
