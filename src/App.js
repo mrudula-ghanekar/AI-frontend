@@ -14,6 +14,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
+  // Toggle between candidate and company mode
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
@@ -23,6 +24,7 @@ export default function App() {
     setError(null);
   };
 
+  // Dropzone setup for file uploads
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: acceptedFiles => {
       if (acceptedFiles.length === 0) {
@@ -40,6 +42,7 @@ export default function App() {
     }
   });
 
+  // Handle file upload and API call
   const handleUpload = async () => {
     if (!files.length || !role.trim()) {
       setError("⚠️ Please select file(s) and enter a job role.");
