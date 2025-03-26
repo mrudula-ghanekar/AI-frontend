@@ -15,6 +15,7 @@ export default function App() {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleModeToggle = () => {
+    setLoading(false); // Reset loading state when switching modes
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
     setBatchResult(null);
