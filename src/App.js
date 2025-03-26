@@ -13,6 +13,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;  // API base URL
 
+  // Toggle between candidate and company modes
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
@@ -60,6 +61,7 @@ export default function App() {
       const formData = new FormData();
 
       if (mode === 'company') {
+        // For company mode, append multiple files
         files.forEach(file => formData.append("files", file));
       } else {
         formData.append("file", files[0]);  // For candidate mode, just one file
@@ -81,9 +83,11 @@ export default function App() {
         }
       );
 
+      // For company mode, process the batch result
       if (mode === 'company') {
         setBatchResult(response.data || {});
       } else {
+        // For candidate mode, process the result for the individual resume
         const formattedResult = {
           suitableForRole: response.data.suited_for_role === "Yes",
           strongPoints: response.data.strong_points || [],
@@ -151,6 +155,18 @@ export default function App() {
         <div className="result-box">
           <h2 className="result-title">📊 Analysis Result</h2>
           <p className={`role-badge ${result.suitableForRole ? 'success' : 'fail'}`}>Candidate Result</p>
+          <h3>Strong Points</h3>
+          <ul>
+            {result.strongPoints.map((point, idx) => <li key={idx}>{point}</li>)}
+          </ul>
+          <h3>Weak Points</h3>
+          <ul>
+            {result.weakPoints.map((point, idx) => <li key={idx}>{point}</li>)}
+          </ul>
+          <h3>Improvement Suggestions</h3>
+          <ul>
+            {result.improvementSuggestions.map((suggestion, idx) => <li key={idx}>{suggestion}</li>)}
+          </ul>
         </div>
       )}
 
@@ -161,24 +177,15 @@ export default function App() {
 
           <div className="section-box">
             <h3 className="section-title">Best Resume</h3>
-            {batchResult.ranking && batchResult.ranking[0] ? (
-              <p>{batchResult.ranking[0].candidate_name} (Rank: {batchResult.ranking[0].index})</p>
-            ) : (
-              <p>No resumes found for comparison.</p>
-            )}
+            <p>{batchResult.bestResume?.name}</p>
 
             <h3 className="section-title">Ranked Candidates</h3>
             <ul>
-              {batchResult.ranking && batchResult.ranking.length > 0 ? (
-                batchResult.ranking.map((candidate, idx) => (
-                  <li key={idx}>
-                    {candidate.candidate_name} (Rank: {candidate.index} | Score: {candidate.score}%)
-                    <p>{candidate.summary}</p>
-                  </li>
-                ))
-              ) : (
-                <li>No candidates available for ranking.</li>
-              )}
+              {batchResult?.rankedCandidates?.map((candidate, idx) => (
+                <li key={idx}>
+                  {candidate.name} (Rank: {candidate.rank} | Score: {candidate.score}%)
+                </li>
+              ))}
             </ul>
           </div>
         </div>
