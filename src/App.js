@@ -164,3 +164,13 @@ const BatchResultDisplay = ({ batchResult }) => (
     </div>
   </div>
 );
+
+// ✅ Fix: Define the Missing Section Component
+const Section = ({ title, data }) => (
+  <div className="section-box">
+    <h3 className="section-title">{title}</h3>
+    <ul>
+      {data.length > 0 ? data.map((point, idx) => <li key={idx}>✅ {point}</li>) : <li>❌ No data available.</li>}
+    </ul>
+  </div>
+);
