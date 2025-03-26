@@ -133,20 +133,6 @@ export default function App() {
   );
 }
 
-// Define the Section component
-const Section = ({ title, data }) => (
-  <div className="section">
-    <h3 className="section-title">{title}</h3>
-    <ul className="section-list">
-      {data.length > 0 ? (
-        data.map((item, idx) => <li key={idx}>{item}</li>)
-      ) : (
-        <p>No data available.</p>
-      )}
-    </ul>
-  </div>
-);
-
 const ResultDisplay = ({ mode, result }) => (
   <div className="result-box">
     <h2 className="result-title">📊 Analysis Result</h2>
