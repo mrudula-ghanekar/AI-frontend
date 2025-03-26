@@ -15,7 +15,6 @@ export default function App() {
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleModeToggle = () => {
-    setLoading(false); // Reset loading state when switching modes
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
     setBatchResult(null);
@@ -121,73 +120,73 @@ export default function App() {
       </div>
 
       {error && <p className="error-message">{error}</p>}
-      {result && <ResultDisplay mode={mode} result={result} />}
-      {batchResult && <BatchResultDisplay batchResult={batchResult} />}
+
+      {/* Result Display */}
+      {result && (
+        <div className="result-box">
+          <h2 className="result-title">📊 Analysis Result</h2>
+          <p className={`role-badge ${result.success ? 'success' : 'fail'}`}>
+            {mode === 'candidate' ? 'Candidate Result' : 'Company Result'}
+          </p>
+
+          {mode === 'candidate' ? (
+            <>
+              <div className="section-box">
+                <h3 className="section-title">Strong Points</h3>
+                <ul>
+                  {result?.strongPoints?.map((point, idx) => (
+                    <li key={idx}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="section-box">
+                <h3 className="section-title">Weak Points</h3>
+                <ul>
+                  {result?.weakPoints?.map((point, idx) => (
+                    <li key={idx}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="section-box">
+                <h3 className="section-title">Improvement Suggestions</h3>
+                <ul>
+                  {result?.improvementSuggestions?.map((point, idx) => (
+                    <li key={idx}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          ) : (
+            <div className="section-box">
+              <h3 className="section-title">Best Resume</h3>
+              <p>{result.bestResume?.name}</p>
+              <h3 className="section-title">Ranked Candidates</h3>
+              <ul>
+                {result?.rankedCandidates?.map((candidate, idx) => (
+                  <li key={idx}>{candidate.name}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Batch Result Display */}
+      {batchResult && (
+        <div className="result-box">
+          <h2 className="result-title">Batch Comparison Results</h2>
+          <div className="section-box">
+            <h3 className="section-title">Best Resume</h3>
+            <p>{batchResult.bestResume?.name}</p>
+            <h3 className="section-title">Ranked Candidates</h3>
+            <ul>
+              {batchResult?.rankedCandidates?.map((candidate, idx) => (
+                <li key={idx}>{candidate.name}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-const ResultDisplay = ({ mode, result }) => (
-  <div className="result-box">
-    <h2 className="result-title">📊 Analysis Result</h2>
-    <p className={`role-badge ${result.success ? 'success' : 'fail'}`}>
-      {mode === 'candidate' ? 'Candidate Result' : 'Company Result'}
-    </p>
-
-    {mode === 'candidate' ? (
-      <>
-        <div className="section-box">
-          <h3 className="section-title">Strong Points</h3>
-          <ul>
-            {result?.strongPoints?.map((point, idx) => (
-              <li key={idx}>{point}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="section-box">
-          <h3 className="section-title">Weak Points</h3>
-          <ul>
-            {result?.weakPoints?.map((point, idx) => (
-              <li key={idx}>{point}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="section-box">
-          <h3 className="section-title">Improvement Suggestions</h3>
-          <ul>
-            {result?.improvementSuggestions?.map((point, idx) => (
-              <li key={idx}>{point}</li>
-            ))}
-          </ul>
-        </div>
-      </>
-    ) : (
-      <div className="section-box">
-        <h3 className="section-title">Best Resume</h3>
-        <p>{result.bestResume?.name}</p>
-        <h3 className="section-title">Ranked Candidates</h3>
-        <ul>
-          {result?.rankedCandidates?.map((candidate, idx) => (
-            <li key={idx}>{candidate.name}</li>
-          ))}
-        </ul>
-      </div>
-    )}
-  </div>
-);
-
-const BatchResultDisplay = ({ batchResult }) => (
-  <div className="result-box">
-    <h2 className="result-title">Batch Comparison Results</h2>
-    <div className="section-box">
-      <h3 className="section-title">Best Resume</h3>
-      <p>{batchResult.bestResume?.name}</p>
-      <h3 className="section-title">Ranked Candidates</h3>
-      <ul>
-        {batchResult?.rankedCandidates?.map((candidate, idx) => (
-          <li key={idx}>{candidate.name}</li>
-        ))}
-      </ul>
-    </div>
-  </div>
-);
