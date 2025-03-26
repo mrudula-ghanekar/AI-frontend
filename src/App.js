@@ -154,7 +154,37 @@ export default function App() {
         <div className="result-box">
           <h2 className="result-title">📊 Analysis Result</h2>
           <p className={`role-badge ${result.suitableForRole ? 'success' : 'fail'}`}>Candidate Result</p>
-          {/* Display results for candidate */}
+          <p><strong>Suitable for Role:</strong> {result.suitableForRole ? '✅ Yes' : '❌ No'}</p>
+          {result.strongPoints.length > 0 && (
+            <>
+              <h3>Strong Points:</h3>
+              <ul>
+                {result.strongPoints.map((point, idx) => (
+                  <li key={idx}>{point}</li>
+                ))}
+              </ul>
+            </>
+          )}
+          {result.weakPoints.length > 0 && (
+            <>
+              <h3>Weak Points:</h3>
+              <ul>
+                {result.weakPoints.map((point, idx) => (
+                  <li key={idx}>{point}</li>
+                ))}
+              </ul>
+            </>
+          )}
+          {result.improvementSuggestions.length > 0 && (
+            <>
+              <h3>Improvement Suggestions:</h3>
+              <ul>
+                {result.improvementSuggestions.map((suggestion, idx) => (
+                  <li key={idx}>{suggestion}</li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       )}
 
