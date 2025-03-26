@@ -1,10 +1,24 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import LandingPage from './LandingPage';
 import './index.css';
 import './App.css';
 
 export default function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/analyze" element={<ResumeAnalyzer />} />
+      </Routes>
+    </Router>
+  );
+}
+
+// 🚀 Resume Analyzer Component
+function ResumeAnalyzer() {
   const [mode, setMode] = useState('candidate');
   const [role, setRole] = useState('');
   const [files, setFiles] = useState([]);
@@ -14,13 +28,9 @@ export default function App() {
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  // Toggle Candidate/Company Mode
+  // 🔄 Toggle Candidate/Company Mode
   const handleModeToggle = () => {
-    setMode(prevMode => (prevMode === 'candidate' ? 'company' : 'candidate'));
-    resetState();
-  };
-
-  const resetState = () => {
+    setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
     setBatchResult(null);
     setFiles([]);
@@ -28,7 +38,7 @@ export default function App() {
     setError(null);
   };
 
-  // File Upload Handling
+  // 📂 Drag and Drop File Selection
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: acceptedFiles => setFiles(acceptedFiles),
     multiple: mode === 'company',
@@ -39,16 +49,15 @@ export default function App() {
     }
   });
 
-  // Upload & Analyze Resume(s)
+  // 🚀 Upload & Analyze Resume(s)
   const handleUpload = async () => {
-    if (!files.length || !role.trim()) {
+    if (!files.length || !role) {
       setError("⚠️ Please select file(s) and enter a job role.");
       return;
     }
-
     setLoading(true);
     setError(null);
-    
+
     try {
       const formData = new FormData();
       files.forEach(file => formData.append("files", file));
@@ -61,12 +70,15 @@ export default function App() {
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      mode === "company" ? setBatchResult(response.data || {}) : setResult(response.data || {});
+      if (mode === "company") {
+        setBatchResult(response.data || {});
+      } else {
+        setResult(response.data || {});
+      }
     } catch (error) {
-      setError(error.response?.data?.error || "An unexpected error occurred. Please try again.");
-    } finally {
-      setLoading(false);
+      setError(error.response?.data?.error || "An error occurred. Please try again.");
     }
+    setLoading(false);
   };
 
   return (
@@ -81,12 +93,13 @@ export default function App() {
       <div className="upload-box">
         <input
           type="text"
-          placeholder="Enter Job Role (e.g., Data Scientist)"
+          placeholder="Enter Role (e.g., Data Scientist)"
           value={role}
           onChange={(e) => setRole(e.target.value)}
           className="input-field"
         />
 
+        {/* Drag & Drop File Upload */}
         <div {...getRootProps({ className: 'dropzone' })}>
           <input {...getInputProps()} />
           <p>📂 Drag & Drop resumes here, or click to browse</p>
@@ -96,12 +109,14 @@ export default function App() {
           <div className="file-preview">
             <strong>Selected Files:</strong>
             <ul>
-              {files.map((file, idx) => <li key={idx}>{file.name}</li>)}
+              {files.map((file, idx) => (
+                <li key={idx}>{file.name}</li>
+              ))}
             </ul>
           </div>
         )}
 
-        <button onClick={handleUpload} className="upload-btn" disabled={loading}>
+        <button onClick={handleUpload} className="upload-btn">
           {loading ? '⏳ Analyzing...' : '📄 Analyze Resume'}
         </button>
       </div>
@@ -113,6 +128,7 @@ export default function App() {
   );
 }
 
+// ✅ Result Display Component
 const ResultDisplay = ({ mode, result }) => (
   <div className="result-box">
     <h2 className="result-title">📊 Analysis Result</h2>
@@ -120,15 +136,15 @@ const ResultDisplay = ({ mode, result }) => (
       {result?.suited_for_role === 'Yes' ? '✅ Suitable' : '❌ Not Suitable'}
     </p>
     <Section title="💪 Strong Points" data={result?.strong_points || []} />
-    {mode === 'candidate' && (
-      <>
-        <Section title="⚠️ Weak Points" data={result?.weak_points || []} />
-        <Section title="💡 Improvement Suggestions" data={result?.improvement_suggestions || []} />
-      </>
+    <Section title="⚠️ Weak Points" data={result?.weak_points || []} />
+    <Section title="💡 Improvement Suggestions" data={result?.improvement_suggestions || []} />
+    {mode === 'company' && result?.comparison_score && (
+      <Section title="📊 Comparison Score" data={[result.comparison_score]} />
     )}
   </div>
 );
 
+// ✅ Batch Result Display Component
 const BatchResultDisplay = ({ batchResult }) => (
   <div className="result-box">
     <h2 className="result-title">🏆 Batch Comparison Result</h2>
@@ -150,6 +166,7 @@ const BatchResultDisplay = ({ batchResult }) => (
   </div>
 );
 
+// ✅ Reusable Section Component
 const Section = ({ title, data }) => (
   <div className="section-box">
     <h3 className="section-title">{title}</h3>
