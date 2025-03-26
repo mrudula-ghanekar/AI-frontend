@@ -14,7 +14,6 @@ export default function App() {
   const [error, setError] = useState(null);
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  // 🔄 Toggle Candidate/Company Mode
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
@@ -24,7 +23,6 @@ export default function App() {
     setError(null);
   };
 
-  // 📂 Drag and Drop File Selection
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: acceptedFiles => {
       if (acceptedFiles.length === 0) {
@@ -42,7 +40,6 @@ export default function App() {
     }
   });
 
-  // 🚀 Upload & Analyze Resume(s)
   const handleUpload = async () => {
     if (!files.length || !role.trim()) {
       setError("⚠️ Please select file(s) and enter a job role.");
@@ -54,24 +51,15 @@ export default function App() {
 
     try {
       const formData = new FormData();
-      
-      // ✅ Ensure correct parameter name based on mode
+
       if (mode === 'company') {
         files.forEach(file => formData.append("files", file));
       } else {
-        formData.append("file", files[0]);  // Single file for Candidate Mode
+        formData.append("file", files[0]);
       }
 
       formData.append("role", role);
       formData.append("mode", mode);
-
-      // ✅ Log Full Request (Check if files are actually added)
-      console.log("🔍 Sending request:", {
-        mode,
-        role,
-        files: files.map(f => f.name),
-        formData
-      });
 
       const endpoint = mode === 'company' ? 'compare-batch' : 'analyze';
       const response = await axios.post(
@@ -80,18 +68,15 @@ export default function App() {
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      console.log("✅ Response received:", response.data);
-
       if (mode === "company") {
         setBatchResult(response.data || {});
       } else {
         setResult(response.data || {});
       }
     } catch (error) {
-      console.error("❌ API Error:", error.response?.data || error);
       setError(error.response?.data?.error || "An error occurred. Please try again.");
     }
-    
+
     setLoading(false);
   };
 
@@ -113,7 +98,6 @@ export default function App() {
           className="input-field"
         />
 
-        {/* Drag & Drop File Upload */}
         <div {...getRootProps({ className: 'dropzone' })}>
           <input {...getInputProps()} />
           <p>📂 Drag & Drop resumes here, or click to browse</p>
@@ -130,7 +114,7 @@ export default function App() {
           </div>
         )}
 
-        <button onClick={handleUpload} className="upload-btn">
+        <button onClick={handleUpload} className="upload-btn" disabled={loading}>
           {loading ? '⏳ Analyzing...' : '📄 Analyze Resume'}
         </button>
       </div>
@@ -145,40 +129,64 @@ export default function App() {
 const ResultDisplay = ({ mode, result }) => (
   <div className="result-box">
     <h2 className="result-title">📊 Analysis Result</h2>
-    <p className={`role-badge ${result?.suited_for_role === 'Yes' ? 'success' : 'fail'}`}>
-      {result?.suited_for_role === 'Yes' ? '✅ Suitable' : '❌ Not Suitable'}
+    <p className={`role-badge ${result.success ? 'success' : 'fail'}`}>
+      {mode === 'candidate' ? 'Candidate Result' : 'Company Result'}
     </p>
-    <Section title="💪 Strong Points" data={result?.strong_points || []} />
-    <Section title="⚠️ Weak Points" data={result?.weak_points || []} />
-    <Section title="💡 Improvement Suggestions" data={result?.improvement_suggestions || []} />
+
+    {mode === 'candidate' ? (
+      <>
+        <div className="section-box">
+          <h3 className="section-title">Strong Points</h3>
+          <ul>
+            {result?.strongPoints?.map((point, idx) => (
+              <li key={idx}>{point}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="section-box">
+          <h3 className="section-title">Weak Points</h3>
+          <ul>
+            {result?.weakPoints?.map((point, idx) => (
+              <li key={idx}>{point}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="section-box">
+          <h3 className="section-title">Improvement Suggestions</h3>
+          <ul>
+            {result?.improvementSuggestions?.map((point, idx) => (
+              <li key={idx}>{point}</li>
+            ))}
+          </ul>
+        </div>
+      </>
+    ) : (
+      <div className="section-box">
+        <h3 className="section-title">Best Resume</h3>
+        <p>{result.bestResume?.name}</p>
+        <h3 className="section-title">Ranked Candidates</h3>
+        <ul>
+          {result?.rankedCandidates?.map((candidate, idx) => (
+            <li key={idx}>{candidate.name}</li>
+          ))}
+        </ul>
+      </div>
+    )}
   </div>
 );
 
 const BatchResultDisplay = ({ batchResult }) => (
   <div className="result-box">
-    <h2 className="result-title">🏆 Batch Comparison Result</h2>
-    <h3 className="best-resume">Best Resume: {batchResult?.best_resume_summary || 'N/A'}</h3>
-    <div className="ranking-container">
-      {batchResult?.ranking?.length > 0 ? (
-        batchResult.ranking.map((item, idx) => (
-          <div key={idx} className="ranking-card">
-            <h4 className="rank-title">🏅 Rank {idx + 1}</h4>
-            <p className="score">Score: <strong>{item.score}%</strong></p>
-            <p className="summary">{item.candidate_name || item.file_name} - {item.summary}</p>
-          </div>
-        ))
-      ) : (
-        <p>No ranking data available.</p>
-      )}
+    <h2 className="result-title">Batch Comparison Results</h2>
+    <div className="section-box">
+      <h3 className="section-title">Best Resume</h3>
+      <p>{batchResult.bestResume?.name}</p>
+      <h3 className="section-title">Ranked Candidates</h3>
+      <ul>
+        {batchResult?.rankedCandidates?.map((candidate, idx) => (
+          <li key={idx}>{candidate.name}</li>
+        ))}
+      </ul>
     </div>
-  </div>
-);
-
-const Section = ({ title, data }) => (
-  <div className="section-box">
-    <h3 className="section-title">{title}</h3>
-    <ul>
-      {data.length > 0 ? data.map((point, idx) => <li key={idx}>✅ {point}</li>) : <li>❌ No data available.</li>}
-    </ul>
   </div>
 );

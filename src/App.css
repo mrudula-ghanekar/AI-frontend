@@ -1,114 +1,122 @@
 /* General Styles */
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f4f4f4;
+  background-color: #f4f4f9;
   color: #333;
   margin: 0;
   padding: 0;
 }
 
+/* Main Container */
 .container {
   text-align: center;
-  max-width: 600px;
-  margin: auto;
+  max-width: 700px;
+  margin: 50px auto;
   padding: 20px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
 }
 
 /* Title & Subtitle */
 .title {
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 32px;
+  font-weight: 600;
   color: #2c3e50;
+  margin-bottom: 10px;
 }
 
 .subtitle {
-  font-size: 16px;
+  font-size: 18px;
   color: #7f8c8d;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 /* Toggle Button */
 .toggle-btn {
-  background: #2980b9; 
-  color: white;
+  background: #2980b9;
+  color: #ffffff;
   border: none;
-  padding: 10px 15px;
-  font-size: 16px;
+  padding: 12px 20px;
+  font-size: 18px;
+  font-weight: 500;
   cursor: pointer;
-  border-radius: 5px;
-  transition: 0.3s;
+  border-radius: 8px;
+  transition: 0.3s ease-in-out;
+  margin-bottom: 30px;
 }
 
 .toggle-btn:hover {
   background: #1f6690;
+  transform: scale(1.05);
 }
 
 /* Input Field */
 .input-field {
-  width: 90%;
-  padding: 8px;
-  margin: 10px 0;
+  width: 80%;
+  padding: 12px;
+  margin: 12px 0;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #333;
+  background: #fafafa;
+  transition: 0.3s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #2980b9;
+  background: #fff;
 }
 
 /* Dropzone */
 .dropzone {
   border: 2px dashed #2980b9;
-  padding: 20px;
-  border-radius: 5px;
+  padding: 40px;
+  border-radius: 12px;
   cursor: pointer;
   background: #ecf0f1;
-  transition: 0.3s;
+  transition: 0.3s ease-in-out;
 }
 
 .dropzone:hover {
   background: #d5e3f0;
+  transform: scale(1.05);
 }
 
 /* Upload Button */
 .upload-btn {
   background: #27ae60;
-  color: white;
+  color: #ffffff;
   border: none;
-  padding: 10px 15px;
-  font-size: 16px;
+  padding: 12px 20px;
+  font-size: 18px;
+  font-weight: 500;
   cursor: pointer;
-  border-radius: 5px;
-  transition: 0.3s;
-  margin-top: 10px;
+  border-radius: 8px;
+  transition: 0.3s ease;
+  margin-top: 20px;
 }
 
 .upload-btn:hover {
   background: #219150;
+  transform: scale(1.05);
 }
 
-/* Error Message */
-.error-message {
-  color: red;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-/* Result Box */
-.result-box {
-  background: #fff;
-  padding: 15px;
-  margin-top: 15px;
-  border-radius: 5px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+.upload-btn:disabled {
+  background: #dcdcdc;
+  cursor: not-allowed;
 }
 
 /* File Preview */
 .file-preview {
   text-align: left;
-  margin-top: 10px;
+  margin-top: 20px;
   padding: 10px;
   background: #ecf0f1;
-  border-radius: 5px;
+  border-radius: 8px;
 }
 
 .file-preview ul {
@@ -118,7 +126,88 @@ body {
 
 .file-preview li {
   background: #d5e3f0;
-  padding: 5px;
-  border-radius: 3px;
-  margin: 3px 0;
+  padding: 8px;
+  border-radius: 5px;
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+/* Error Message */
+.error-message {
+  color: #e74c3c;
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Result Box */
+.result-box {
+  background: #fff;
+  padding: 20px;
+  margin-top: 30px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.result-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #2980b9;
+}
+
+.role-badge {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 5px 15px;
+  border-radius: 50px;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.success {
+  background-color: #27ae60;
+  color: #fff;
+}
+
+.fail {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+/* Section Title */
+.section-title {
+  font-size: 20px;
+  font-weight: 500;
+  color: #2980b9;
+  margin-bottom: 10px;
+}
+
+.section-box {
+  margin-top: 20px;
+  text-align: left;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+ul li {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* Responsive Layout */
+@media (max-width: 600px) {
+  .container {
+    width: 90%;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .input-field {
+    width: 90%;
+  }
 }
