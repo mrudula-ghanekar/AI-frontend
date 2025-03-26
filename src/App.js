@@ -1,24 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
-import LandingPage from './LandingPage';
 import './index.css';
 import './App.css';
 
 export default function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/analyze" element={<ResumeAnalyzer />} />
-      </Routes>
-    </Router>
-  );
-}
-
-// 🚀 Resume Analyzer Component
-function ResumeAnalyzer() {
   const [mode, setMode] = useState('candidate');
   const [role, setRole] = useState('');
   const [files, setFiles] = useState([]);
@@ -128,7 +114,6 @@ function ResumeAnalyzer() {
   );
 }
 
-// ✅ Result Display Component
 const ResultDisplay = ({ mode, result }) => (
   <div className="result-box">
     <h2 className="result-title">📊 Analysis Result</h2>
@@ -144,7 +129,6 @@ const ResultDisplay = ({ mode, result }) => (
   </div>
 );
 
-// ✅ Batch Result Display Component
 const BatchResultDisplay = ({ batchResult }) => (
   <div className="result-box">
     <h2 className="result-title">🏆 Batch Comparison Result</h2>
@@ -166,7 +150,6 @@ const BatchResultDisplay = ({ batchResult }) => (
   </div>
 );
 
-// ✅ Reusable Section Component
 const Section = ({ title, data }) => (
   <div className="section-box">
     <h3 className="section-title">{title}</h3>
