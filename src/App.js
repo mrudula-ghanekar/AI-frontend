@@ -4,16 +4,15 @@ import { useDropzone } from 'react-dropzone';
 import './App.css';
 
 export default function App() {
-  const [mode, setMode] = useState('candidate');  // candidate or company mode
+  const [mode, setMode] = useState('candidate');
   const [role, setRole] = useState('');
   const [files, setFiles] = useState([]);
   const [result, setResult] = useState(null);
   const [batchResult, setBatchResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;  // API base URL
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  // Toggle between candidate and company modes
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
@@ -23,23 +22,20 @@ export default function App() {
     setError(null);
   };
 
-  // Configure Dropzone for file uploads
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: acceptedFiles => {
       if (acceptedFiles.length === 0) {
         setError("⚠️ Invalid file type. Please upload a PDF or DOCX.");
         return;
       }
-
       if (mode === 'company' && acceptedFiles.length > 10) {
         setError("⚠️ You can upload up to 10 resumes in company mode.");
         return;
       }
-
       setFiles(acceptedFiles);
       setError(null);
     },
-    multiple: mode === 'company',  // Enable multiple files for company mode
+    multiple: mode === 'company',
     accept: {
       'application/pdf': ['.pdf'],
       'application/msword': ['.doc'],
@@ -47,7 +43,6 @@ export default function App() {
     }
   });
 
-  // Handle the upload action
   const handleUpload = async () => {
     if (!files.length || !role.trim()) {
       setError("⚠️ Please select file(s) and enter a job role.");
@@ -59,12 +54,10 @@ export default function App() {
 
     try {
       const formData = new FormData();
-
       if (mode === 'company') {
-        // For company mode, append multiple files
         files.forEach(file => formData.append("files", file));
       } else {
-        formData.append("file", files[0]);  // For candidate mode, just one file
+        formData.append("file", files[0]);
       }
 
       formData.append("role", role);
@@ -82,32 +75,23 @@ export default function App() {
         }
       );
 
-      console.log("Response from API:", response.data); // Debugging response
-
-      // For company mode, process the batch result
       if (mode === 'company') {
-        if (response.data) {
-          setBatchResult(response.data);
-        } else {
-          setError('⚠️ No results returned for the company mode.');
-        }
+        response.data ? setBatchResult(response.data) : setError('⚠️ No results returned for the company mode.');
       } else {
-        // For candidate mode, process the result for the individual resume
         if (response.data) {
-          const formattedResult = {
+          setResult({
             suitableForRole: response.data.suited_for_role === "Yes",
             strongPoints: response.data.strong_points || [],
             weakPoints: response.data.weak_points || [],
             improvementSuggestions: response.data.improvement_suggestions || [],
-          };
-          setResult(formattedResult);
+          });
         } else {
           setError('⚠️ No results returned for the candidate mode.');
         }
       }
     } catch (error) {
       if (error.response) {
-        setError(`⚠️ ${error.response?.data?.error || 'An unexpected error occurred. Please try again.'}`);
+        setError(`⚠️ ${error.response?.data?.error || 'An unexpected error occurred.'}`);
       } else if (error.request) {
         setError('⚠️ Network error. Please check your connection.');
       } else {
@@ -119,91 +103,88 @@ export default function App() {
   };
 
   return (
-    <div className="container">
-      <h1 className="title">🚀 ResumeHelp AI</h1>
-      <p className="subtitle">AI-Powered Resume Analyzer & Job Match Tool</p>
+    <div className="app-container">
+      <header className="app-header">
+        <h1>ResumeHelp AI</h1>
+        <p className="app-subtitle">AI-Powered Resume Analyzer & Job Match</p>
+      </header>
 
-      <button onClick={handleModeToggle} className="toggle-btn">
-        Switch to {mode === 'candidate' ? 'Company' : 'Candidate'} Mode
-      </button>
+      <div className="app-controls">
+        <button onClick={handleModeToggle} className="btn-secondary">
+          Switch to {mode === 'candidate' ? 'Company' : 'Candidate'} Mode
+        </button>
 
-      <div className="upload-box">
         <input
           type="text"
           placeholder="Enter Role (e.g., Data Scientist)"
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="input-field"
+          className="input-role"
         />
 
-        <div {...getRootProps({ className: 'dropzone' })}>
+        <div {...getRootProps({ className: 'dropzone-area' })}>
           <input {...getInputProps()} />
-          <p>📂 Drag & Drop resumes here, or click to browse</p>
+          <p>Drag & drop resume(s) here or click to upload</p>
         </div>
 
         {files.length > 0 && (
-          <div className="file-preview">
-            <strong>Selected Files:</strong>
-            <ul>
-              {files.map((file, idx) => (
-                <li key={idx}>{file.name}</li>
-              ))}
-            </ul>
+          <div className="file-list">
+            {files.map((file, idx) => (
+              <div key={idx} className="file-item">{file.name}</div>
+            ))}
           </div>
         )}
 
-        <button onClick={handleUpload} className="upload-btn" disabled={loading}>
-          {loading ? '⏳ Analyzing...' : '📄 Analyze Resume'}
+        <button onClick={handleUpload} className="btn-primary" disabled={loading}>
+          {loading ? 'Analyzing...' : 'Analyze Resume'}
         </button>
+
+        {error && <div className="error-banner">{error}</div>}
       </div>
 
-      {error && <p className="error-message" aria-live="assertive">{error}</p>}
-
-      {/* Candidate Mode Result Display */}
+      {/* Candidate Results */}
       {result && mode === 'candidate' && (
-        <div className="result-box">
-          <h2 className="result-title">📊 Analysis Result</h2>
-          <p className={`role-badge ${result.suitableForRole ? 'success' : 'fail'}`}>
+        <section className="results-panel">
+          <h2>Analysis Result</h2>
+          <p className={`badge ${result.suitableForRole ? 'badge-success' : 'badge-fail'}`}>
             {result.suitableForRole ? 'Suitable for Role' : 'Not Suitable for Role'}
           </p>
-          <h3>Strong Points</h3>
-          <ul>
-            {result.strongPoints.map((point, idx) => <li key={idx}>{point}</li>)}
-          </ul>
-          <h3>Weak Points</h3>
-          <ul>
-            {result.weakPoints.map((point, idx) => <li key={idx}>{point}</li>)}
-          </ul>
-          <h3>Improvement Suggestions</h3>
-          <ul>
-            {result.improvementSuggestions.map((suggestion, idx) => <li key={idx}>{suggestion}</li>)}
-          </ul>
-        </div>
+          <div className="result-section">
+            <h3>Strong Points</h3>
+            <ul>{result.strongPoints.map((p, i) => <li key={i}>{p}</li>)}</ul>
+          </div>
+          <div className="result-section">
+            <h3>Weak Points</h3>
+            <ul>{result.weakPoints.map((p, i) => <li key={i}>{p}</li>)}</ul>
+          </div>
+          <div className="result-section">
+            <h3>Improvement Suggestions</h3>
+            <ul>{result.improvementSuggestions.map((p, i) => <li key={i}>{p}</li>)}</ul>
+          </div>
+        </section>
       )}
 
-      {/* Company Mode Result Display */}
+      {/* Company Results */}
       {batchResult && mode === 'company' && (
-        <div className="result-box">
-          <h2 className="result-title">Batch Comparison Results</h2>
-
-          <div className="section-box">
-            <h3 className="section-title">Best Resume</h3>
-            <p>{batchResult.best_resume_summary || 'No best resume available'}</p>
-
-            <h3 className="section-title">Ranked Candidates</h3>
+        <section className="results-panel">
+          <h2>Batch Comparison Results</h2>
+          <div className="result-section">
+            <h3>Best Resume</h3>
+            <p>{batchResult.best_resume_summary || 'No best resume found'}</p>
+          </div>
+          <div className="result-section">
+            <h3>Ranked Candidates</h3>
             <ul>
-              {batchResult?.ranking?.length ? (
-                batchResult?.ranking.map((candidate, idx) => (
-                  <li key={idx}>
-                    {candidate.summary} (Score: {candidate.score}%)
-                  </li>
+              {batchResult.ranking?.length ? (
+                batchResult.ranking.map((c, i) => (
+                  <li key={i}>{c.summary} (Score: {c.score}%)</li>
                 ))
               ) : (
-                <li>No candidates ranked yet</li>
+                <li>No candidates ranked</li>
               )}
             </ul>
           </div>
-        </div>
+        </section>
       )}
     </div>
   );
