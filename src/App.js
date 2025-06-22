@@ -12,6 +12,7 @@ export default function App() {
   const [batchResult, setBatchResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleModeToggle = () => {
@@ -86,27 +87,17 @@ export default function App() {
       const response = await axios.post(
         `${API_BASE_URL}/api/analyze`,
         formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          }
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       if (mode === 'company') {
-        response.data ? setBatchResult(response.data) : setError('⚠️ No results returned for the company mode.');
+        Array.isArray(response.data)
+          ? setBatchResult(response.data)
+          : setError('⚠️ No results returned for the company mode.');
       } else {
-        if (response.data) {
-          setResult({
-            suitableForRole: response.data.suited_for_role === "Yes",
-            strongPoints: response.data.strong_points || [],
-            weakPoints: response.data.weak_points || [],
-            improvementSuggestions: response.data.improvement_suggestions || [],
-          });
-        } else {
-          setError('⚠️ No results returned for the candidate mode.');
-        }
+        setResult(response.data);
       }
+
     } catch (error) {
       if (error.response) {
         setError(`⚠️ ${error.response?.data?.error || 'An unexpected error occurred.'}`);
@@ -166,38 +157,49 @@ export default function App() {
         </button>
 
         {error && <div className="error-banner">{error}</div>}
-
-        {/* Company mode results */}
-        {batchResult && mode === 'company' && (
-          <div className="results-section">
-            <h2>Resume Match Ranking</h2>
-            <table className="results-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Candidate Name</th>
-                  <th>File</th>
-                  <th>Score</th>
-                  <th>Summary</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[...batchResult.ranking]
-                  .sort((a, b) => b.score - a.score)
-                  .map((entry, idx) => (
-                    <tr key={idx}>
-                      <td>{idx + 1}</td>
-                      <td>{entry.candidate_name || 'N/A'}</td>
-                      <td>{entry.file_name}</td>
-                      <td>{entry.score}</td>
-                      <td>{entry.summary}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        )}
       </div>
+
+      {/* Candidate mode result */}
+      {mode === 'candidate' && result && (
+        <div className="results-panel">
+          <h2>Analysis Result</h2>
+          <div className="result-section">
+            <h3>Status</h3>
+            <span className={`badge ${result.suited_for_role === 'Yes' ? 'badge-success' : 'badge-fail'}`}>
+              {result.suited_for_role === 'Yes' ? 'Suitable for Role' : 'Not Suitable'}
+            </span>
+          </div>
+
+          <div className="result-section">
+            <h3>Strong Points</h3>
+            <ul>{(result.strong_points || []).map((point, i) => <li key={i}>{point}</li>)}</ul>
+          </div>
+
+          <div className="result-section">
+            <h3>Weak Points</h3>
+            <ul>{(result.weak_points || []).map((point, i) => <li key={i}>{point}</li>)}</ul>
+          </div>
+
+          <div className="result-section">
+            <h3>Suggestions</h3>
+            <ul>{(result.improvement_suggestions || []).map((s, i) => <li key={i}>{s}</li>)}</ul>
+          </div>
+        </div>
+      )}
+
+      {/* Company mode result */}
+      {mode === 'company' && batchResult && (
+        <div className="results-panel">
+          <h2>Batch Resume Analysis</h2>
+          {batchResult.map((d, idx) => (
+            <div key={idx} className="result-section">
+              <h3>{d.candidate_name} ({d.score}%)</h3>
+              <p><strong>Resume File:</strong> {d.file_name}</p>
+              <p>{d.summary}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
