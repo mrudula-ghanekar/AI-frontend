@@ -1,165 +1,212 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useDropzone } from 'react-dropzone';
 import './App.css';
 
-function App() {
-  const [jdFile, setJdFile] = useState(null);
-  const [resumeFiles, setResumeFiles] = useState([]);
+export default function App() {
+  const [mode, setMode] = useState('candidate');
   const [role, setRole] = useState('');
+  const [files, setFiles] = useState([]);
+  const [jdFile, setJdFile] = useState(null);
   const [result, setResult] = useState(null);
   const [batchResult, setBatchResult] = useState(null);
-  const [error, setError] = useState('');
-  const [mode, setMode] = useState('individual');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-  const handleJDChange = (e) => {
-    setJdFile(e.target.files[0]);
-  };
-
-  const handleResumeChange = (e) => {
-    setResumeFiles(Array.from(e.target.files));
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const files = Array.from(e.dataTransfer.files);
-    setResumeFiles(files);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleAnalyze = async () => {
-    setError('');
+  const handleModeToggle = () => {
+    setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
     setResult(null);
     setBatchResult(null);
+    setFiles([]);
+    setJdFile(null);
+    setRole('');
+    setError(null);
+  };
 
-    if (!jdFile || resumeFiles.length === 0 || !role) {
-      setError('Please upload a job description, resume(s), and enter a role.');
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: acceptedFiles => {
+      if (acceptedFiles.length === 0) {
+        setError("⚠️ Invalid file type. Please upload a PDF or DOCX.");
+        return;
+      }
+      if (mode === 'company' && acceptedFiles.length > 10) {
+        setError("⚠️ You can upload up to 10 resumes in company mode.");
+        return;
+      }
+      setFiles(acceptedFiles);
+      setError(null);
+    },
+    multiple: mode === 'company',
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/msword': ['.doc'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+    }
+  });
+
+  const { getRootProps: getJDRootProps, getInputProps: getJDInputProps } = useDropzone({
+    onDrop: acceptedFiles => {
+      if (acceptedFiles.length !== 1) {
+        setError("⚠️ Please upload exactly one job description file.");
+        return;
+      }
+      setJdFile(acceptedFiles[0]);
+      setError(null);
+    },
+    multiple: false,
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/msword': ['.doc'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+    }
+  });
+
+  const handleUpload = async () => {
+    if (!files.length || !role.trim() || (mode === 'company' && !jdFile)) {
+      setError("⚠️ Please select file(s), a job description, and enter a job role.");
       return;
     }
 
-    const formData = new FormData();
-    formData.append('jd', jdFile);
-    resumeFiles.forEach((file, index) => {
-      formData.append('resumes', file);
-    });
-    formData.append('role', role);
-    formData.append('mode', mode);
+    setLoading(true);
+    setError(null);
 
     try {
-      const response = await axios.post('http://localhost:5000/analyze', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
+      const formData = new FormData();
       if (mode === 'company') {
-        let data = response.data;
+        files.forEach(file => formData.append("files", file));
+        formData.append("jd_file", jdFile);
+      } else {
+        formData.append("file", files[0]);
+      }
 
-        if (typeof data === 'string') {
-          try {
-            data = JSON.parse(data);
-          } catch (e) {
-            setError('⚠️ Failed to parse server response.');
-            return;
+      formData.append("role", role);
+      formData.append("mode", mode);
+
+      const response = await axios.post(
+        `${API_BASE_URL}/api/analyze`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
           }
         }
+      );
 
-        if (Array.isArray(data) && data.length > 0) {
+      if (mode === 'company') {
+        const data = response.data;
+        if (Array.isArray(data)) {
           setBatchResult(data);
         } else {
-          setError('⚠️ No valid results returned for the company mode.');
+          setError('⚠️ No valid results returned for company mode.');
         }
       } else {
-        setResult(response.data);
+        if (response.data) {
+          setResult({
+            suitableForRole: response.data.suited_for_role === "Yes",
+            strongPoints: response.data.strong_points || [],
+            weakPoints: response.data.weak_points || [],
+            improvementSuggestions: response.data.improvement_suggestions || [],
+          });
+        } else {
+          setError('⚠️ No results returned for candidate mode.');
+        }
       }
-    } catch (err) {
-      setError('An error occurred during analysis.');
+    } catch (error) {
+      if (error.response) {
+        setError(`⚠️ ${error.response?.data?.error || 'An unexpected error occurred.'}`);
+      } else if (error.request) {
+        setError('⚠️ Network error. Please check your connection.');
+      } else {
+        setError('⚠️ Something went wrong. Please try again.');
+      }
     }
+
+    setLoading(false);
   };
 
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>Resume Matcher</h1>
-        <p className="app-subtitle">Match resumes against a job description</p>
+        <h1>ResumeHelp AI</h1>
+        <p className="app-subtitle">AI-Powered Resume Analyzer & Job Match</p>
       </header>
 
       <div className="app-controls">
-        <div>
-          <label className="btn-secondary">Upload JD:
-            <input type="file" accept=".pdf,.doc,.docx" onChange={handleJDChange} hidden />
-          </label>
-        </div>
-
-        <div
-          className="dropzone-area"
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-        >
-          Drag & drop resume(s) here or click to upload
-          <input type="file" multiple accept=".pdf,.doc,.docx" onChange={handleResumeChange} hidden />
-        </div>
-
-        <div className="file-list">
-          {resumeFiles.map((file, index) => (
-            <div className="file-item" key={index}>{file.name}</div>
-          ))}
-        </div>
+        <button onClick={handleModeToggle} className="btn-secondary">
+          Switch to {mode === 'candidate' ? 'Company' : 'Candidate'} Mode
+        </button>
 
         <input
-          className="input-role"
           type="text"
           placeholder="Enter Role (e.g., Data Scientist)"
           value={role}
           onChange={(e) => setRole(e.target.value)}
+          className="input-role"
         />
 
-        <div>
-          <label>
-            <input
-              type="radio"
-              name="mode"
-              value="individual"
-              checked={mode === 'individual'}
-              onChange={(e) => setMode(e.target.value)}
-            /> Individual
-          </label>
-          <label style={{ marginLeft: '1rem' }}>
-            <input
-              type="radio"
-              name="mode"
-              value="company"
-              checked={mode === 'company'}
-              onChange={(e) => setMode(e.target.value)}
-            /> Company
-          </label>
+        {mode === 'company' && (
+          <div {...getJDRootProps({ className: 'dropzone-area' })}>
+            <input {...getJDInputProps()} />
+            <p>Upload Job Description File</p>
+            {jdFile && <div className="file-item">{jdFile.name}</div>}
+          </div>
+        )}
+
+        <div {...getRootProps({ className: 'dropzone-area' })}>
+          <input {...getInputProps()} />
+          <p>Drag & drop resume(s) here or click to upload</p>
         </div>
 
-        <button className="btn-primary" onClick={handleAnalyze}>Analyze Resume</button>
+        {files.length > 0 && (
+          <div className="file-list">
+            {files.map((file, idx) => (
+              <div key={idx} className="file-item">{file.name}</div>
+            ))}
+          </div>
+        )}
+
+        <button onClick={handleUpload} className="btn-primary" disabled={loading}>
+          {loading ? 'Analyzing...' : 'Analyze Resume'}
+        </button>
 
         {error && <div className="error-banner">{error}</div>}
       </div>
 
-      {result && (
+      {/* Candidate Mode Result */}
+      {result && mode === 'candidate' && (
         <div className="results-panel">
-          <h2>Match Result</h2>
+          <h2>Analysis Result</h2>
+          <div className={`badge ${result.suitableForRole ? 'badge-success' : 'badge-fail'}`}>
+            {result.suitableForRole ? "This resume is suitable for the role." : "This resume is not a good match."}
+          </div>
+
           <div className="result-section">
-            <h3>Candidate: {result.candidate_name}</h3>
-            <p><strong>Score:</strong> {result.score}</p>
-            <p><strong>Summary:</strong> {result.summary}</p>
+            <h3>Strong Points</h3>
+            <ul>{result.strongPoints.map((pt, i) => <li key={i}>{pt}</li>)}</ul>
+          </div>
+
+          <div className="result-section">
+            <h3>Weak Points</h3>
+            <ul>{result.weakPoints.map((pt, i) => <li key={i}>{pt}</li>)}</ul>
+          </div>
+
+          <div className="result-section">
+            <h3>Suggestions for Improvement</h3>
+            <ul>{result.improvementSuggestions.map((pt, i) => <li key={i}>{pt}</li>)}</ul>
           </div>
         </div>
       )}
 
-      {batchResult && (
+      {/* Company Mode Result */}
+      {batchResult && mode === 'company' && (
         <div className="results-panel">
-          <h2>Batch Results</h2>
-          {batchResult.map((r, i) => (
+          <h2>Candidate Matching Results</h2>
+          {batchResult.map((candidate, i) => (
             <div key={i} className="result-section">
-              <h3>{r.candidate_name}</h3>
-              <p><strong>File:</strong> {r.file_name}</p>
-              <p><strong>Score:</strong> {r.score}</p>
-              <p><strong>Summary:</strong> {r.summary}</p>
+              <h3>{candidate.candidate_name} ({candidate.score}%)</h3>
+              <div className="file-item">{candidate.file_name}</div>
+              <p>{candidate.summary}</p>
             </div>
           ))}
         </div>
@@ -167,5 +214,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
