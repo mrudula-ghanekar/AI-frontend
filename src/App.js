@@ -7,7 +7,7 @@ export default function App() {
   const [mode, setMode] = useState('candidate');
   const [role, setRole] = useState('');
   const [files, setFiles] = useState([]);
-  const [jdFile, setJdFile] = useState(null); // 🔹 JD file state
+  const [jdFile, setJdFile] = useState(null);
   const [result, setResult] = useState(null);
   const [batchResult, setBatchResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ export default function App() {
     setResult(null);
     setBatchResult(null);
     setFiles([]);
-    setJdFile(null); // 🔹 Reset JD file
+    setJdFile(null);
     setRole('');
     setError(null);
   };
@@ -45,7 +45,6 @@ export default function App() {
     }
   });
 
-  // 🔹 JD file dropzone (single file)
   const { getRootProps: getJDRootProps, getInputProps: getJDInputProps } = useDropzone({
     onDrop: acceptedFiles => {
       if (acceptedFiles.length !== 1) {
@@ -76,7 +75,7 @@ export default function App() {
       const formData = new FormData();
       if (mode === 'company') {
         files.forEach(file => formData.append("files", file));
-        formData.append("jd_file", jdFile); // 🔹 Append JD file
+        formData.append("jd_file", jdFile);
       } else {
         formData.append("file", files[0]);
       }
@@ -84,10 +83,9 @@ export default function App() {
       formData.append("role", role);
       formData.append("mode", mode);
 
-      const endpoint = mode === 'company' ? 'compare-batch' : 'analyze';
-
+      // ✅ FIXED: always use /analyze
       const response = await axios.post(
-        `${API_BASE_URL}/api/${endpoint}`,
+        `${API_BASE_URL}/api/analyze`,
         formData,
         {
           headers: {
@@ -143,7 +141,6 @@ export default function App() {
           className="input-role"
         />
 
-        {/* 🔹 Show JD upload only in company mode */}
         {mode === 'company' && (
           <div {...getJDRootProps({ className: 'dropzone-area' })}>
             <input {...getJDInputProps()} />
@@ -171,9 +168,6 @@ export default function App() {
 
         {error && <div className="error-banner">{error}</div>}
       </div>
-
-      {/* Existing Candidate & Company Result sections remain unchanged */}
-      {/* ... */}
     </div>
   );
 }
