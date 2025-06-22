@@ -93,22 +93,32 @@ export default function App() {
         }
       );
 
-      const data = response.data;
-
       if (mode === 'company') {
-        if (Array.isArray(data)) {
-          setBatchResult(data);
-        } else {
+        let data = response.data;
+
+        try {
+          if (typeof data === 'string') {
+            // Attempt to fix malformed response
+            const fixedJson = `[${data.replace(/}\s*,\s*{/g, '},{')}]`;
+            data = JSON.parse(fixedJson);
+          }
+
+          if (Array.isArray(data)) {
+            setBatchResult(data);
+          } else {
+            setError('⚠️ No valid results returned for company mode.');
+          }
+        } catch (e) {
           console.error("Unexpected company response:", data);
-          setError('⚠️ Unexpected response format from server in company mode.');
+          setError('⚠️ Failed to parse company results.');
         }
       } else {
-        if (data) {
+        if (response.data) {
           setResult({
-            suitableForRole: data.suited_for_role === "Yes",
-            strongPoints: data.strong_points || [],
-            weakPoints: data.weak_points || [],
-            improvementSuggestions: data.improvement_suggestions || [],
+            suitableForRole: response.data.suited_for_role === "Yes",
+            strongPoints: response.data.strong_points || [],
+            weakPoints: response.data.weak_points || [],
+            improvementSuggestions: response.data.improvement_suggestions || [],
           });
         } else {
           setError('⚠️ No results returned for the candidate mode.');
