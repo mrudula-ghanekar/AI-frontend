@@ -178,9 +178,50 @@ button {
   color: #d93025;
 }
 
+/* Company Mode Results Table */
+.results-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.results-section h2 {
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
+
+.results-table th,
+.results-table td {
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.results-table th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  color: #555;
+}
+
+.results-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
 /* Transitions */
 .results-panel,
-.app-controls {
+.app-controls,
+.results-section {
   animation: fadeInUp 0.5s ease;
 }
 

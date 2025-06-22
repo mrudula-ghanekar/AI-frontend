@@ -83,7 +83,6 @@ export default function App() {
       formData.append("role", role);
       formData.append("mode", mode);
 
-      // ✅ FIXED: always use /analyze
       const response = await axios.post(
         `${API_BASE_URL}/api/analyze`,
         formData,
@@ -167,6 +166,37 @@ export default function App() {
         </button>
 
         {error && <div className="error-banner">{error}</div>}
+
+        {/* Company mode results */}
+        {batchResult && mode === 'company' && (
+          <div className="results-section">
+            <h2>Resume Match Ranking</h2>
+            <table className="results-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Candidate Name</th>
+                  <th>File</th>
+                  <th>Score</th>
+                  <th>Summary</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...batchResult.ranking]
+                  .sort((a, b) => b.score - a.score)
+                  .map((entry, idx) => (
+                    <tr key={idx}>
+                      <td>{idx + 1}</td>
+                      <td>{entry.candidate_name || 'N/A'}</td>
+                      <td>{entry.file_name}</td>
+                      <td>{entry.score}</td>
+                      <td>{entry.summary}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
