@@ -94,10 +94,18 @@ export default function App() {
       );
 
       if (mode === 'company') {
-        if (Array.isArray(response.data)) {
-          setBatchResult(response.data);
-        } else {
-          setError('⚠️ No valid results returned for company mode.');
+        let data = response.data;
+        try {
+          if (typeof data === 'string') {
+            data = JSON.parse(data);
+          }
+          if (Array.isArray(data)) {
+            setBatchResult(data);
+          } else {
+            setError('⚠️ No valid results returned for company mode.');
+          }
+        } catch (e) {
+          setError('⚠️ Failed to parse company results.');
         }
       } else {
         if (response.data) {
@@ -172,49 +180,44 @@ export default function App() {
         {error && <div className="error-banner">{error}</div>}
       </div>
 
-      {/* === CANDIDATE MODE RESULT === */}
-      {mode === 'candidate' && result && (
+      {result && (
         <div className="results-panel">
-          <h2>Analysis Result</h2>
+          <h2>Candidate Analysis</h2>
           <div className={`badge ${result.suitableForRole ? 'badge-success' : 'badge-fail'}`}>
-            {result.suitableForRole ? 'Suitable for Role' : 'Not Suitable for Role'}
+            {result.suitableForRole ? 'Suitable for the role' : 'Not suitable for the role'}
           </div>
 
           <div className="result-section">
             <h3>Strong Points</h3>
             <ul>
-              {result.strongPoints.map((point, i) => <li key={i}>{point}</li>)}
+              {result.strongPoints.map((point, index) => <li key={index}>{point}</li>)}
             </ul>
           </div>
 
           <div className="result-section">
-            <h3>Weak Points</h3>
+            <h3>Areas for Improvement</h3>
             <ul>
-              {result.weakPoints.map((point, i) => <li key={i}>{point}</li>)}
+              {result.weakPoints.map((point, index) => <li key={index}>{point}</li>)}
             </ul>
           </div>
 
           <div className="result-section">
-            <h3>Improvement Suggestions</h3>
+            <h3>Suggestions</h3>
             <ul>
-              {result.improvementSuggestions.map((point, i) => <li key={i}>{point}</li>)}
+              {result.improvementSuggestions.map((point, index) => <li key={index}>{point}</li>)}
             </ul>
           </div>
         </div>
       )}
 
-      {/* === COMPANY MODE RESULTS === */}
-      {mode === 'company' && batchResult && (
+      {batchResult && (
         <div className="results-panel">
-          <h2>Candidate Rankings</h2>
-          {batchResult.map((res, idx) => (
-            <div key={idx} className="result-section">
-              <h3>{res.candidate_name}</h3>
-              <div className="badge badge-success">
-                Score: {res.score} / 100
-              </div>
-              <p><strong>File:</strong> {res.file_name}</p>
-              <p>{res.summary}</p>
+          <h2>Company Mode Results</h2>
+          {batchResult.map((entry, index) => (
+            <div key={index} className="result-section">
+              <h3>{entry.candidate_name} ({entry.score}%)</h3>
+              <p><strong>Resume:</strong> {entry.file_name}</p>
+              <p><strong>Summary:</strong> {entry.summary}</p>
             </div>
           ))}
         </div>
