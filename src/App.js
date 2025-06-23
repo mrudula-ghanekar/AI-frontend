@@ -86,7 +86,7 @@ export default function App() {
       formData.append("mode", mode);
 
       const response = await axios.post(
-        `${API_BASE_URL}/api/analyze`,
+        `${API_BASE_URL}/analyze`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
