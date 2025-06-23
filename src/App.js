@@ -87,9 +87,7 @@ export default function App() {
         `${API_BASE_URL}/api/analyze`,
         formData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          }
+          headers: { "Content-Type": "multipart/form-data" }
         }
       );
 
@@ -117,7 +115,7 @@ export default function App() {
             suitableForRole: response.data.suited_for_role === "Yes",
             strongPoints: response.data.strong_points || [],
             weakPoints: response.data.weak_points || [],
-            improvementSuggestions: response.data.improvement_suggestions || [],
+            recommendations: response.data.recommendations || null,
           });
         } else {
           setError('⚠️ No results returned for the candidate mode.');
@@ -215,12 +213,14 @@ export default function App() {
 
           <div className="result-section">
             <h3>Suggestions</h3>
-            {result.improvementSuggestions && result.improvementSuggestions.length > 0 ? (
-              <ul>
-                {result.improvementSuggestions.map((point, index) => (
-                  <li key={index}>{point}</li>
-                ))}
-              </ul>
+            {result.recommendations ? (
+              <>
+                <p><strong>Online Courses:</strong> {result.recommendations.online_courses?.join(', ') || 'None'}</p>
+                <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels?.join(', ') || 'None'}</p>
+                <p><strong>Career Guides:</strong> {result.recommendations.career_guides?.join(', ') || 'None'}</p>
+                <p><strong>Alternative Roles:</strong> {result.recommendations.alternative_roles?.join(', ') || 'None'}</p>
+                <p><strong>Skills to Learn:</strong> {result.recommendations.skills_to_learn?.join(', ') || 'None'}</p>
+              </>
             ) : (
               <p>No suggestions provided.</p>
             )}
