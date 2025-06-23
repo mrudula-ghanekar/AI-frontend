@@ -109,16 +109,17 @@ export default function App() {
           Array.isArray(data.strong_points) &&
           Array.isArray(data.weak_points)
         ) {
+          const recommendations = data.recommendations || {};
           setResult({
             suitableForRole: data.suited_for_role === "Yes",
-            strongPoints: data.strong_points || [],
-            weakPoints: data.weak_points || [],
+            strongPoints: Array.isArray(data.strong_points) ? data.strong_points : [],
+            weakPoints: Array.isArray(data.weak_points) ? data.weak_points : [],
             recommendations: {
-              online_courses: data.recommendations?.online_courses || [],
-              youtube_channels: data.recommendations?.youtube_channels || [],
-              career_guides: data.recommendations?.career_guides || [],
-              alternative_roles: data.recommendations?.alternative_roles || [],
-              skills_to_learn: data.recommendations?.skills_to_learn || []
+              online_courses: Array.isArray(recommendations.online_courses) ? recommendations.online_courses : [],
+              youtube_channels: Array.isArray(recommendations.youtube_channels) ? recommendations.youtube_channels : [],
+              career_guides: Array.isArray(recommendations.career_guides) ? recommendations.career_guides : [],
+              alternative_roles: Array.isArray(recommendations.alternative_roles) ? recommendations.alternative_roles : [],
+              skills_to_learn: Array.isArray(recommendations.skills_to_learn) ? recommendations.skills_to_learn : [],
             }
           });
         } else {
@@ -207,7 +208,7 @@ export default function App() {
             ) : <p>No areas for improvement noted.</p>}
           </section>
 
-          {result.recommendations && (
+          {result.recommendations && Object.values(result.recommendations).some(arr => arr.length > 0) && (
             <section>
               <h3>Suggestions</h3>
               <p><strong>Courses:</strong> {result.recommendations.online_courses.join(', ') || 'None'}</p>
