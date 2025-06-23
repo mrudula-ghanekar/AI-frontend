@@ -98,7 +98,6 @@ export default function App() {
 
         try {
           if (typeof data === 'string') {
-            // Attempt to fix malformed response
             const fixedJson = `[${data.replace(/}\s*,\s*{/g, '},{')}]`;
             data = JSON.parse(fixedJson);
           }
@@ -194,23 +193,37 @@ export default function App() {
 
           <div className="result-section">
             <h3>Strong Points</h3>
-            <ul>
-              {result.strongPoints.map((point, index) => <li key={index}>{point}</li>)}
-            </ul>
+            {result.strongPoints.length > 0 ? (
+              <ul>
+                {result.strongPoints.map((point, index) => <li key={index}>{point}</li>)}
+              </ul>
+            ) : (
+              <p>No strong points identified.</p>
+            )}
           </div>
 
           <div className="result-section">
             <h3>Areas for Improvement</h3>
-            <ul>
-              {result.weakPoints.map((point, index) => <li key={index}>{point}</li>)}
-            </ul>
+            {result.weakPoints.length > 0 ? (
+              <ul>
+                {result.weakPoints.map((point, index) => <li key={index}>{point}</li>)}
+              </ul>
+            ) : (
+              <p>No areas for improvement noted.</p>
+            )}
           </div>
 
           <div className="result-section">
             <h3>Suggestions</h3>
-            <ul>
-              {result.improvementSuggestions.map((point, index) => <li key={index}>{point}</li>)}
-            </ul>
+            {result.improvementSuggestions && result.improvementSuggestions.length > 0 ? (
+              <ul>
+                {result.improvementSuggestions.map((point, index) => (
+                  <li key={index}>{point}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>No suggestions provided.</p>
+            )}
           </div>
         </div>
       )}
