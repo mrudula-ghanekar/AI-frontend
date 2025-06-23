@@ -113,7 +113,13 @@ export default function App() {
             suitableForRole: data.suited_for_role === "Yes",
             strongPoints: data.strong_points || [],
             weakPoints: data.weak_points || [],
-            recommendations: data.recommendations || null
+            recommendations: {
+              online_courses: data.recommendations?.online_courses || [],
+              youtube_channels: data.recommendations?.youtube_channels || [],
+              career_guides: data.recommendations?.career_guides || [],
+              alternative_roles: data.recommendations?.alternative_roles || [],
+              skills_to_learn: data.recommendations?.skills_to_learn || []
+            }
           });
         } else {
           setError("⚠️ Invalid candidate response from server.");
@@ -204,11 +210,11 @@ export default function App() {
           {result.recommendations && (
             <section>
               <h3>Suggestions</h3>
-              <p><strong>Courses:</strong> {result.recommendations.online_courses.join(', ')}</p>
-              <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels.join(', ')}</p>
-              <p><strong>Career Guides:</strong> {result.recommendations.career_guides.join(', ')}</p>
-              <p><strong>Alt. Roles:</strong> {result.recommendations.alternative_roles.join(', ')}</p>
-              <p><strong>Skills:</strong> {result.recommendations.skills_to_learn.join(', ')}</p>
+              <p><strong>Courses:</strong> {result.recommendations.online_courses.join(', ') || 'None'}</p>
+              <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels.join(', ') || 'None'}</p>
+              <p><strong>Career Guides:</strong> {result.recommendations.career_guides.join(', ') || 'None'}</p>
+              <p><strong>Alt. Roles:</strong> {result.recommendations.alternative_roles.join(', ') || 'None'}</p>
+              <p><strong>Skills:</strong> {result.recommendations.skills_to_learn.join(', ') || 'None'}</p>
             </section>
           )}
         </div>
