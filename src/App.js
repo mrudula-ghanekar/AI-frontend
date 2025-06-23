@@ -85,11 +85,7 @@ export default function App() {
       formData.append("role", role.trim());
       formData.append("mode", mode);
 
-      const response = await axios.post(
-        `${API_BASE_URL}/api/analyze-file`,
-        formData
-      );
-
+      const response = await axios.post(`${API_BASE_URL}/api/analyze-file`, formData);
       const data = response.data;
       console.log("📦 API Response:", data);
 
@@ -98,47 +94,25 @@ export default function App() {
         if (ranking && Array.isArray(ranking)) {
           setBatchResult(ranking);
         } else {
-          console.error("❌ Invalid company structure:", data);
           setError("⚠️ Invalid company response from server.");
         }
       } else {
-        let processedResult = null;
-        if (Array.isArray(data)) {
-          processedResult = {
-            candidateName: files[0]?.name || 'Unnamed Candidate',
-            suitableForRole: true,
-            strongPoints: data,
-            weakPoints: [],
-            recommendations: {
-              online_courses: [],
-              youtube_channels: [],
-              career_guides: [],
-              alternative_roles: [],
-              skills_to_learn: [],
-            }
-          };
-        } else if (typeof data === 'object' && data !== null) {
-          const rec = data.recommendations || {};
-          processedResult = {
-            candidateName: data.candidate_name || 'Unnamed Candidate',
-            suitableForRole: data.suited_for_role === 'Yes',
-            strongPoints: Array.isArray(data.strong_points) ? data.strong_points : [],
-            weakPoints: Array.isArray(data.weak_points) ? data.weak_points : [],
-            recommendations: {
-              online_courses: rec.online_courses || [],
-              youtube_channels: rec.youtube_channels || [],
-              career_guides: rec.career_guides || [],
-              alternative_roles: rec.alternative_roles || [],
-              skills_to_learn: rec.skills_to_learn || [],
-            }
-          };
-        }
+        const rec = data.recommendations || {};
+        const processedResult = {
+          candidateName: data.candidate_name || 'Unnamed Candidate',
+          suitableForRole: data.suited_for_role === 'Yes',
+          strongPoints: Array.isArray(data.strong_points) ? data.strong_points : [],
+          weakPoints: Array.isArray(data.weak_points) ? data.weak_points : [],
+          recommendations: {
+            online_courses: rec.online_courses || [],
+            youtube_channels: rec.youtube_channels || [],
+            career_guides: rec.career_guides || [],
+            alternative_roles: rec.alternative_roles || [],
+            skills_to_learn: rec.skills_to_learn || [],
+          }
+        };
 
-        if (processedResult) {
-          setResult(processedResult);
-        } else {
-          setError("⚠️ Invalid candidate response from server.");
-        }
+        setResult(processedResult);
       }
     } catch (error) {
       console.error('Upload error:', error);
@@ -221,14 +195,16 @@ export default function App() {
             <ul>{result.weakPoints.map((pt, i) => <li key={i}>{pt}</li>)}</ul>
           </section>
 
-          <section>
-            <h3>Suggestions</h3>
-            <p><strong>Courses:</strong> {result.recommendations.online_courses.join(', ')}</p>
-            <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels.join(', ')}</p>
-            <p><strong>Career Guides:</strong> {result.recommendations.career_guides.join(', ')}</p>
-            <p><strong>Alt. Roles:</strong> {result.recommendations.alternative_roles.join(', ')}</p>
-            <p><strong>Skills:</strong> {result.recommendations.skills_to_learn.join(', ')}</p>
-          </section>
+          {!result.suitableForRole && (
+            <section>
+              <h3>Suggestions</h3>
+              <p><strong>Courses:</strong> {result.recommendations.online_courses.join(', ') || 'N/A'}</p>
+              <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels.join(', ') || 'N/A'}</p>
+              <p><strong>Career Guides:</strong> {result.recommendations.career_guides.join(', ') || 'N/A'}</p>
+              <p><strong>Alt. Roles:</strong> {result.recommendations.alternative_roles.join(', ') || 'N/A'}</p>
+              <p><strong>Skills to Learn:</strong> {result.recommendations.skills_to_learn.join(', ') || 'N/A'}</p>
+            </section>
+          )}
         </div>
       )}
 
