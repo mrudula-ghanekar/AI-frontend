@@ -91,7 +91,7 @@ export default function App() {
       }
 
       const response = await axios.post(
-        `${API_BASE_URL}/api/analyze`,
+        `${API_BASE_URL}/api/analyze-file`,
         formData // DO NOT manually set headers for FormData
       );
 
