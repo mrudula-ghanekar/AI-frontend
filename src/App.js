@@ -12,26 +12,27 @@ export default function App() {
   const [batchResult, setBatchResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleModeToggle = () => {
     setMode(prev => (prev === 'candidate' ? 'company' : 'candidate'));
-    setResult(null);
-    setBatchResult(null);
+    setRole('');
     setFiles([]);
     setJdFile(null);
-    setRole('');
+    setResult(null);
+    setBatchResult(null);
     setError(null);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: acceptedFiles => {
-      if (acceptedFiles.length === 0) {
-        setError("⚠️ Invalid file type. Please upload a PDF or DOCX.");
+      if (!acceptedFiles.length) {
+        setError("⚠️ Please upload a valid resume (PDF/DOCX).");
         return;
       }
       if (mode === 'company' && acceptedFiles.length > 10) {
-        setError("⚠️ You can upload up to 10 resumes in company mode.");
+        setError("⚠️ You can upload a maximum of 10 resumes in company mode.");
         return;
       }
       setFiles(acceptedFiles);
@@ -48,7 +49,7 @@ export default function App() {
   const { getRootProps: getJDRootProps, getInputProps: getJDInputProps } = useDropzone({
     onDrop: acceptedFiles => {
       if (acceptedFiles.length !== 1) {
-        setError("⚠️ Please upload exactly one job description file.");
+        setError("⚠️ Please upload exactly one job description.");
         return;
       }
       setJdFile(acceptedFiles[0]);
@@ -63,66 +64,59 @@ export default function App() {
   });
 
   const handleUpload = async () => {
-    if (!files.length || !role.trim() || (mode === 'company' && !jdFile)) {
-      setError("⚠️ Please select file(s), a job description, and enter a job role.");
+    if (!role.trim() || !files.length || (mode === 'company' && !jdFile)) {
+      setError("⚠️ Please fill all required fields and upload file(s).");
       return;
     }
 
     setLoading(true);
     setError(null);
+    setResult(null);
+    setBatchResult(null);
 
     try {
       const formData = new FormData();
+
       if (mode === 'company') {
-        files.forEach(file => formData.append("files", file));
-        formData.append("jd_file", jdFile);
+        files.forEach(file => formData.append('files', file));
+        formData.append('jd_file', jdFile);
       } else {
-        formData.append("file", files[0]);
+        formData.append('file', files[0]);
       }
 
-      formData.append("role", role);
-      formData.append("mode", mode);
+      formData.append('role', role);
+      formData.append('mode', mode);
 
-      const response = await axios.post(
-        `${API_BASE_URL}/api/analyze`,
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      const response = await axios.post(`${API_BASE_URL}/api/analyze`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
 
-      console.log("🧠 API response:", response.data);
+      const data = response.data;
 
       if (mode === 'company') {
-        let data = response.data;
-        try {
-          if (typeof data === 'string') {
-            const fixedJson = `[${data.replace(/}\s*,\s*{/g, '},{')}]`;
-            data = JSON.parse(fixedJson);
-          }
-          if (Array.isArray(data)) {
-            setBatchResult(data);
-          } else {
-            setError('⚠️ No valid results returned for company mode.');
-          }
-        } catch (e) {
-          console.error("Unexpected company response:", data);
-          setError('⚠️ Failed to parse company results.');
+        if (Array.isArray(data)) {
+          setBatchResult(data);
+        } else {
+          setError("⚠️ Invalid batch result format from API.");
         }
       } else {
-        const data = response.data;
+        if (!data || !data.status) {
+          setError("⚠️ Invalid candidate response from server.");
+          return;
+        }
         setResult({
-          suitableForRole: data.suited_for_role === "Yes",
+          suitableForRole: data.suited_for_role === 'Yes',
           strongPoints: data.strong_points || [],
           weakPoints: data.weak_points || [],
           recommendations: data.recommendations || null
         });
       }
-    } catch (error) {
-      if (error.response) {
-        setError(`⚠️ ${error.response?.data?.error || 'An unexpected error occurred.'}`);
-      } else if (error.request) {
-        setError('⚠️ Network error. Please check your connection.');
+    } catch (err) {
+      console.error("Upload error:", err);
+      if (err.response?.data?.error) {
+        setError(`⚠️ ${err.response.data.error}`);
       } else {
-        setError('⚠️ Something went wrong. Please try again.');
+        setError("⚠️ Something went wrong. Please try again.");
       }
     }
 
@@ -143,10 +137,10 @@ export default function App() {
 
         <input
           type="text"
-          placeholder="Enter Role (e.g., Data Scientist)"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
+          placeholder="Enter Job Role (e.g. Backend Developer)"
           className="input-role"
+          value={role}
+          onChange={e => setRole(e.target.value)}
         />
 
         {mode === 'company' && (
@@ -159,7 +153,7 @@ export default function App() {
 
         <div {...getRootProps({ className: 'dropzone-area' })}>
           <input {...getInputProps()} />
-          <p>Drag & drop resume(s) here or click to upload</p>
+          <p>Drag & drop resume{mode === 'company' ? 's' : ''} here, or click to select</p>
         </div>
 
         {files.length > 0 && (
@@ -179,46 +173,46 @@ export default function App() {
 
       {result && (
         <div className="results-panel">
-          <h2>Candidate Analysis</h2>
+          <h2>Candidate Report</h2>
           <div className={`badge ${result.suitableForRole ? 'badge-success' : 'badge-fail'}`}>
-            {result.suitableForRole ? 'Suitable for the role' : 'Not suitable for the role'}
+            {result.suitableForRole ? 'Suitable for Role' : 'Not Suitable for Role'}
           </div>
 
           <section>
             <h3>Strong Points</h3>
-            {result.strongPoints.length ? (
+            {result.strongPoints.length > 0 ? (
               <ul>{result.strongPoints.map((pt, i) => <li key={i}>{pt}</li>)}</ul>
-            ) : <p>No strong points identified.</p>}
+            ) : <p>None identified.</p>}
           </section>
 
           <section>
             <h3>Areas for Improvement</h3>
-            {result.weakPoints.length ? (
+            {result.weakPoints.length > 0 ? (
               <ul>{result.weakPoints.map((pt, i) => <li key={i}>{pt}</li>)}</ul>
-            ) : <p>No areas for improvement noted.</p>}
+            ) : <p>No specific weaknesses noted.</p>}
           </section>
 
           <section>
-            <h3>Suggestions</h3>
+            <h3>Recommendations</h3>
             {result.recommendations ? (
               <>
                 <p><strong>Courses:</strong> {result.recommendations.online_courses.join(', ')}</p>
-                <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels.join(', ')}</p>
-                <p><strong>Career Guides:</strong> {result.recommendations.career_guides.join(', ')}</p>
-                <p><strong>Alt. Roles:</strong> {result.recommendations.alternative_roles.join(', ')}</p>
-                <p><strong>Skills:</strong> {result.recommendations.skills_to_learn.join(', ')}</p>
+                <p><strong>YouTube:</strong> {result.recommendations.youtube_channels.join(', ')}</p>
+                <p><strong>Guides:</strong> {result.recommendations.career_guides.join(', ')}</p>
+                <p><strong>Alt Roles:</strong> {result.recommendations.alternative_roles.join(', ')}</p>
+                <p><strong>Skills to Learn:</strong> {result.recommendations.skills_to_learn.join(', ')}</p>
               </>
-            ) : <p>No suggestions provided.</p>}
+            ) : <p>No recommendations available.</p>}
           </section>
         </div>
       )}
 
       {batchResult && (
         <div className="results-panel">
-          <h2>Company Mode Results</h2>
+          <h2>Batch Evaluation</h2>
           {batchResult.map((entry, index) => (
             <div key={index} className="result-section">
-              <h3>{entry.candidate_name} ({entry.score}%)</h3>
+              <h3>{entry.candidate_name || 'Unnamed'} ({entry.score}%)</h3>
               <p><strong>Resume:</strong> {entry.file_name}</p>
               <p><strong>Summary:</strong> {entry.summary}</p>
             </div>
