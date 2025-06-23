@@ -90,8 +90,17 @@ export default function App() {
       console.log("📦 API Response:", data);
 
       if (mode === 'company') {
-        const ranking = Array.isArray(data.ranking) ? data.ranking : data;
-        if (ranking && Array.isArray(ranking)) {
+        let ranking = [];
+
+        if (Array.isArray(data)) {
+          ranking = data;
+        } else if (Array.isArray(data.ranking)) {
+          ranking = data.ranking;
+        } else if (data && data.file_name) {
+          ranking = [data];
+        }
+
+        if (ranking.length > 0) {
           setBatchResult(ranking);
         } else {
           setError("⚠️ Invalid company response from server.");
