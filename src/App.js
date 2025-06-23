@@ -105,15 +105,15 @@ export default function App() {
         if (
           data &&
           data.status === 'success' &&
-          typeof data.suited_for_role === 'string' &&
+          (data.suited_for_role === 'Yes' || data.suited_for_role === 'No') &&
           Array.isArray(data.strong_points) &&
           Array.isArray(data.weak_points)
         ) {
           const recommendations = data.recommendations || {};
           setResult({
             suitableForRole: data.suited_for_role === "Yes",
-            strongPoints: Array.isArray(data.strong_points) ? data.strong_points : [],
-            weakPoints: Array.isArray(data.weak_points) ? data.weak_points : [],
+            strongPoints: data.strong_points,
+            weakPoints: data.weak_points,
             recommendations: {
               online_courses: Array.isArray(recommendations.online_courses) ? recommendations.online_courses : [],
               youtube_channels: Array.isArray(recommendations.youtube_channels) ? recommendations.youtube_channels : [],
@@ -208,14 +208,14 @@ export default function App() {
             ) : <p>No areas for improvement noted.</p>}
           </section>
 
-          {result.recommendations && Object.values(result.recommendations).some(arr => arr.length > 0) && (
+          {result.recommendations && (
             <section>
               <h3>Suggestions</h3>
-              <p><strong>Courses:</strong> {result.recommendations.online_courses.join(', ') || 'None'}</p>
-              <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels.join(', ') || 'None'}</p>
-              <p><strong>Career Guides:</strong> {result.recommendations.career_guides.join(', ') || 'None'}</p>
-              <p><strong>Alt. Roles:</strong> {result.recommendations.alternative_roles.join(', ') || 'None'}</p>
-              <p><strong>Skills:</strong> {result.recommendations.skills_to_learn.join(', ') || 'None'}</p>
+              <p><strong>Courses:</strong> {result.recommendations.online_courses.join(', ')}</p>
+              <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels.join(', ')}</p>
+              <p><strong>Career Guides:</strong> {result.recommendations.career_guides.join(', ')}</p>
+              <p><strong>Alt. Roles:</strong> {result.recommendations.alternative_roles.join(', ')}</p>
+              <p><strong>Skills:</strong> {result.recommendations.skills_to_learn.join(', ')}</p>
             </section>
           )}
         </div>
