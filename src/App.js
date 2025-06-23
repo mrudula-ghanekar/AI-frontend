@@ -82,7 +82,7 @@ export default function App() {
         formData.append("file", files[0]);
       }
 
-      formData.append("role", role);
+      formData.append("role", role.trim());
       formData.append("mode", mode);
 
       const response = await axios.post(
@@ -94,19 +94,16 @@ export default function App() {
       console.log("📦 API Response:", data);
 
       if (mode === 'company') {
-        if (data && (Array.isArray(data.ranking) || Array.isArray(data))) {
-          const ranking = Array.isArray(data.ranking) ? data.ranking : data;
+        const ranking = Array.isArray(data.ranking) ? data.ranking : data;
+        if (ranking && Array.isArray(ranking)) {
           setBatchResult(ranking);
         } else {
           console.error("❌ Invalid company structure:", data);
           setError("⚠️ Invalid company response from server.");
         }
       } else {
-        // candidate mode
         let processedResult = null;
-
         if (Array.isArray(data)) {
-          // Handle case when only strong points are returned
           processedResult = {
             candidateName: files[0]?.name || 'Unnamed Candidate',
             suitableForRole: true,
@@ -121,7 +118,6 @@ export default function App() {
             }
           };
         } else if (typeof data === 'object' && data !== null) {
-          // Handle full object structure
           const rec = data.recommendations || {};
           processedResult = {
             candidateName: data.candidate_name || 'Unnamed Candidate',
@@ -241,9 +237,20 @@ export default function App() {
           <h2>Company Mode Results</h2>
           {batchResult.map((entry, index) => (
             <div key={index} className="result-section">
-              <h3>{entry.candidate_name || 'Unnamed'} ({entry.score || 0}%)</h3>
+              <h3>{entry.candidate_name || entry.file_name || 'Unnamed'} ({entry.score || 0}%)</h3>
               <p><strong>Resume:</strong> {entry.file_name}</p>
               <p><strong>Summary:</strong> {entry.summary}</p>
+
+              {entry.improvement_suggestions && entry.improvement_suggestions.length > 0 && (
+                <div>
+                  <h4>Improvement Suggestions</h4>
+                  <ul>
+                    {entry.improvement_suggestions.map((sugg, idx) => (
+                      <li key={idx}>{sugg}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           ))}
         </div>
