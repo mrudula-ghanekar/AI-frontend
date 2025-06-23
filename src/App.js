@@ -102,13 +102,16 @@ export default function App() {
           setError("⚠️ Invalid company response from server.");
         }
       } else {
-        if (data && data.status === 'success' && data.candidate_name) {
-          const rec = data.recommendations || {};
+        // ✅ Candidate mode: handle object or array
+        const candidateData = Array.isArray(data) ? data[0] : data;
+
+        if (candidateData && (candidateData.status === 'success' || candidateData.candidate_name)) {
+          const rec = candidateData.recommendations || {};
           setResult({
-            candidateName: data.candidate_name || 'Unnamed Candidate',
-            suitableForRole: data.suited_for_role === 'Yes',
-            strongPoints: Array.isArray(data.strong_points) ? data.strong_points : [],
-            weakPoints: Array.isArray(data.weak_points) ? data.weak_points : [],
+            candidateName: candidateData.candidate_name || 'Unnamed Candidate',
+            suitableForRole: candidateData.suited_for_role === 'Yes',
+            strongPoints: Array.isArray(candidateData.strong_points) ? candidateData.strong_points : [],
+            weakPoints: Array.isArray(candidateData.weak_points) ? candidateData.weak_points : [],
             recommendations: {
               online_courses: rec.online_courses || [],
               youtube_channels: rec.youtube_channels || [],
