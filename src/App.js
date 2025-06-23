@@ -91,36 +91,34 @@ export default function App() {
       );
 
       const data = response.data;
+      console.log("📦 API Response:", data);
 
       if (mode === 'company') {
-        if (data && Array.isArray(data.ranking)) {
-          setBatchResult(data.ranking);
+        if (data && (Array.isArray(data.ranking) || Array.isArray(data))) {
+          const ranking = Array.isArray(data.ranking) ? data.ranking : data;
+          setBatchResult(ranking);
         } else {
+          console.error("❌ Invalid company structure:", data);
           setError("⚠️ Invalid company response from server.");
         }
       } else {
-        if (
-          data &&
-          data.status === 'success' &&
-          typeof data.suited_for_role === 'string' &&
-          Array.isArray(data.strong_points) &&
-          Array.isArray(data.weak_points)
-        ) {
-          const recommendations = data.recommendations || {};
+        if (data && data.status === 'success') {
+          const rec = data.recommendations || {};
           setResult({
-            candidateName: data.candidate_name || 'N/A',
-            suitableForRole: data.suited_for_role === "Yes",
-            strongPoints: data.strong_points,
-            weakPoints: data.weak_points,
+            candidateName: data.candidate_name ?? 'Unknown',
+            suitableForRole: data.suited_for_role === 'Yes',
+            strongPoints: Array.isArray(data.strong_points) ? data.strong_points : [],
+            weakPoints: Array.isArray(data.weak_points) ? data.weak_points : [],
             recommendations: {
-              online_courses: Array.isArray(recommendations.online_courses) ? recommendations.online_courses : [],
-              youtube_channels: Array.isArray(recommendations.youtube_channels) ? recommendations.youtube_channels : [],
-              career_guides: Array.isArray(recommendations.career_guides) ? recommendations.career_guides : [],
-              alternative_roles: Array.isArray(recommendations.alternative_roles) ? recommendations.alternative_roles : [],
-              skills_to_learn: Array.isArray(recommendations.skills_to_learn) ? recommendations.skills_to_learn : [],
+              online_courses: rec.online_courses || [],
+              youtube_channels: rec.youtube_channels || [],
+              career_guides: rec.career_guides || [],
+              alternative_roles: rec.alternative_roles || [],
+              skills_to_learn: rec.skills_to_learn || [],
             }
           });
         } else {
+          console.error("❌ Invalid candidate structure:", data);
           setError("⚠️ Invalid candidate response from server.");
         }
       }
@@ -190,36 +188,28 @@ export default function App() {
       {result && (
         <div className="results-panel">
           <h2>Candidate Analysis</h2>
-          <p><strong>Candidate:</strong> {result.candidateName}</p>
-
           <div className={`badge ${result.suitableForRole ? 'badge-success' : 'badge-fail'}`}>
             {result.suitableForRole ? 'Suitable for the role' : 'Not suitable for the role'}
           </div>
 
           <section>
             <h3>Strong Points</h3>
-            {result.strongPoints.length ? (
-              <ul>{result.strongPoints.map((pt, i) => <li key={i}>{pt}</li>)}</ul>
-            ) : <p>No strong points identified.</p>}
+            <ul>{result.strongPoints.map((pt, i) => <li key={i}>{pt}</li>)}</ul>
           </section>
 
           <section>
             <h3>Areas for Improvement</h3>
-            {result.weakPoints.length ? (
-              <ul>{result.weakPoints.map((pt, i) => <li key={i}>{pt}</li>)}</ul>
-            ) : <p>No areas for improvement noted.</p>}
+            <ul>{result.weakPoints.map((pt, i) => <li key={i}>{pt}</li>)}</ul>
           </section>
 
-          {result.recommendations && (
-            <section>
-              <h3>Suggestions</h3>
-              <p><strong>Courses:</strong> {result.recommendations.online_courses.join(', ')}</p>
-              <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels.join(', ')}</p>
-              <p><strong>Career Guides:</strong> {result.recommendations.career_guides.join(', ')}</p>
-              <p><strong>Alt. Roles:</strong> {result.recommendations.alternative_roles.join(', ')}</p>
-              <p><strong>Skills:</strong> {result.recommendations.skills_to_learn.join(', ')}</p>
-            </section>
-          )}
+          <section>
+            <h3>Suggestions</h3>
+            <p><strong>Courses:</strong> {result.recommendations.online_courses.join(', ')}</p>
+            <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels.join(', ')}</p>
+            <p><strong>Career Guides:</strong> {result.recommendations.career_guides.join(', ')}</p>
+            <p><strong>Alt. Roles:</strong> {result.recommendations.alternative_roles.join(', ')}</p>
+            <p><strong>Skills:</strong> {result.recommendations.skills_to_learn.join(', ')}</p>
+          </section>
         </div>
       )}
 
