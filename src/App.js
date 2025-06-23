@@ -64,7 +64,7 @@ export default function App() {
 
   const handleUpload = async () => {
     if (!files.length || !role.trim() || (mode === 'company' && !jdFile)) {
-      setError("⚠️ Please select file(s), a job description, and enter a job role.");
+      setError("⚠️ Please select file(s), a job description (if in company mode), and enter a job role.");
       return;
     }
 
@@ -85,10 +85,14 @@ export default function App() {
       formData.append("role", role);
       formData.append("mode", mode);
 
+      // Debug: Log what's being sent
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
       const response = await axios.post(
         `${API_BASE_URL}/api/analyze`,
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        formData // DO NOT manually set headers for FormData
       );
 
       const data = response.data;
@@ -127,7 +131,9 @@ export default function App() {
         }
       }
     } catch (error) {
+      console.error('Upload error:', error);
       if (error.response) {
+        console.error('Server response:', error.response.data);
         setError(`⚠️ ${error.response?.data?.error || 'An unexpected error occurred.'}`);
       } else if (error.request) {
         setError('⚠️ Network error. Please check your connection.');
