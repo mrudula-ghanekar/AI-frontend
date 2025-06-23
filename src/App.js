@@ -86,20 +86,18 @@ export default function App() {
       const response = await axios.post(
         `${API_BASE_URL}/api/analyze`,
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" }
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
+
+      console.log("🧠 API response:", response.data);
 
       if (mode === 'company') {
         let data = response.data;
-
         try {
           if (typeof data === 'string') {
             const fixedJson = `[${data.replace(/}\s*,\s*{/g, '},{')}]`;
             data = JSON.parse(fixedJson);
           }
-
           if (Array.isArray(data)) {
             setBatchResult(data);
           } else {
@@ -110,16 +108,13 @@ export default function App() {
           setError('⚠️ Failed to parse company results.');
         }
       } else {
-        if (response.data) {
-          setResult({
-            suitableForRole: response.data.suited_for_role === "Yes",
-            strongPoints: response.data.strong_points || [],
-            weakPoints: response.data.weak_points || [],
-            recommendations: response.data.recommendations || null,
-          });
-        } else {
-          setError('⚠️ No results returned for the candidate mode.');
-        }
+        const data = response.data;
+        setResult({
+          suitableForRole: data.suited_for_role === "Yes",
+          strongPoints: data.strong_points || [],
+          weakPoints: data.weak_points || [],
+          recommendations: data.recommendations || null
+        });
       }
     } catch (error) {
       if (error.response) {
@@ -189,42 +184,32 @@ export default function App() {
             {result.suitableForRole ? 'Suitable for the role' : 'Not suitable for the role'}
           </div>
 
-          <div className="result-section">
+          <section>
             <h3>Strong Points</h3>
-            {result.strongPoints.length > 0 ? (
-              <ul>
-                {result.strongPoints.map((point, index) => <li key={index}>{point}</li>)}
-              </ul>
-            ) : (
-              <p>No strong points identified.</p>
-            )}
-          </div>
+            {result.strongPoints.length ? (
+              <ul>{result.strongPoints.map((pt, i) => <li key={i}>{pt}</li>)}</ul>
+            ) : <p>No strong points identified.</p>}
+          </section>
 
-          <div className="result-section">
+          <section>
             <h3>Areas for Improvement</h3>
-            {result.weakPoints.length > 0 ? (
-              <ul>
-                {result.weakPoints.map((point, index) => <li key={index}>{point}</li>)}
-              </ul>
-            ) : (
-              <p>No areas for improvement noted.</p>
-            )}
-          </div>
+            {result.weakPoints.length ? (
+              <ul>{result.weakPoints.map((pt, i) => <li key={i}>{pt}</li>)}</ul>
+            ) : <p>No areas for improvement noted.</p>}
+          </section>
 
-          <div className="result-section">
+          <section>
             <h3>Suggestions</h3>
             {result.recommendations ? (
               <>
-                <p><strong>Online Courses:</strong> {result.recommendations.online_courses?.join(', ') || 'None'}</p>
-                <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels?.join(', ') || 'None'}</p>
-                <p><strong>Career Guides:</strong> {result.recommendations.career_guides?.join(', ') || 'None'}</p>
-                <p><strong>Alternative Roles:</strong> {result.recommendations.alternative_roles?.join(', ') || 'None'}</p>
-                <p><strong>Skills to Learn:</strong> {result.recommendations.skills_to_learn?.join(', ') || 'None'}</p>
+                <p><strong>Courses:</strong> {result.recommendations.online_courses.join(', ')}</p>
+                <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels.join(', ')}</p>
+                <p><strong>Career Guides:</strong> {result.recommendations.career_guides.join(', ')}</p>
+                <p><strong>Alt. Roles:</strong> {result.recommendations.alternative_roles.join(', ')}</p>
+                <p><strong>Skills:</strong> {result.recommendations.skills_to_learn.join(', ')}</p>
               </>
-            ) : (
-              <p>No suggestions provided.</p>
-            )}
-          </div>
+            ) : <p>No suggestions provided.</p>}
+          </section>
         </div>
       )}
 
