@@ -102,16 +102,32 @@ export default function App() {
           setError("⚠️ Invalid company response from server.");
         }
       } else {
-        // ✅ Candidate mode: handle object or array
-        const candidateData = Array.isArray(data) ? data[0] : data;
+        // candidate mode
+        let processedResult = null;
 
-        if (candidateData && (candidateData.status === 'success' || candidateData.candidate_name)) {
-          const rec = candidateData.recommendations || {};
-          setResult({
-            candidateName: candidateData.candidate_name || 'Unnamed Candidate',
-            suitableForRole: candidateData.suited_for_role === 'Yes',
-            strongPoints: Array.isArray(candidateData.strong_points) ? candidateData.strong_points : [],
-            weakPoints: Array.isArray(candidateData.weak_points) ? candidateData.weak_points : [],
+        if (Array.isArray(data)) {
+          // Handle case when only strong points are returned
+          processedResult = {
+            candidateName: files[0]?.name || 'Unnamed Candidate',
+            suitableForRole: true,
+            strongPoints: data,
+            weakPoints: [],
+            recommendations: {
+              online_courses: [],
+              youtube_channels: [],
+              career_guides: [],
+              alternative_roles: [],
+              skills_to_learn: [],
+            }
+          };
+        } else if (typeof data === 'object' && data !== null) {
+          // Handle full object structure
+          const rec = data.recommendations || {};
+          processedResult = {
+            candidateName: data.candidate_name || 'Unnamed Candidate',
+            suitableForRole: data.suited_for_role === 'Yes',
+            strongPoints: Array.isArray(data.strong_points) ? data.strong_points : [],
+            weakPoints: Array.isArray(data.weak_points) ? data.weak_points : [],
             recommendations: {
               online_courses: rec.online_courses || [],
               youtube_channels: rec.youtube_channels || [],
@@ -119,9 +135,12 @@ export default function App() {
               alternative_roles: rec.alternative_roles || [],
               skills_to_learn: rec.skills_to_learn || [],
             }
-          });
+          };
+        }
+
+        if (processedResult) {
+          setResult(processedResult);
         } else {
-          console.error("❌ Invalid candidate structure:", data);
           setError("⚠️ Invalid candidate response from server.");
         }
       }
