@@ -102,10 +102,10 @@ export default function App() {
           setError("⚠️ Invalid company response from server.");
         }
       } else {
-        if (data && data.status === 'success') {
+        if (data && data.status === 'success' && data.candidate_name) {
           const rec = data.recommendations || {};
           setResult({
-            candidateName: data.candidate_name ?? 'Unknown',
+            candidateName: data.candidate_name || 'Unnamed Candidate',
             suitableForRole: data.suited_for_role === 'Yes',
             strongPoints: Array.isArray(data.strong_points) ? data.strong_points : [],
             weakPoints: Array.isArray(data.weak_points) ? data.weak_points : [],
@@ -125,8 +125,9 @@ export default function App() {
     } catch (error) {
       console.error('Upload error:', error);
       if (error.response) {
-        console.error('Server response:', error.response.data);
-        setError(`⚠️ ${error.response?.data?.error || 'An unexpected error occurred.'}`);
+        const raw = error.response?.data?.error;
+        const clean = typeof raw === 'string' ? raw.replace(/[\n\r]/g, ' ') : 'An unexpected error occurred.';
+        setError(`⚠️ ${clean}`);
       } else if (error.request) {
         setError('⚠️ Network error. Please check your connection.');
       } else {
@@ -218,7 +219,7 @@ export default function App() {
           <h2>Company Mode Results</h2>
           {batchResult.map((entry, index) => (
             <div key={index} className="result-section">
-              <h3>{entry.candidate_name} ({entry.score}%)</h3>
+              <h3>{entry.candidate_name || 'Unnamed'} ({entry.score || 0}%)</h3>
               <p><strong>Resume:</strong> {entry.file_name}</p>
               <p><strong>Summary:</strong> {entry.summary}</p>
             </div>
