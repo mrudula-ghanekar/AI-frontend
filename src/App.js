@@ -85,25 +85,18 @@ export default function App() {
       formData.append("role", role);
       formData.append("mode", mode);
 
-      // Debug: Log what's being sent
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-      }
-
       const response = await axios.post(
         `${API_BASE_URL}/api/analyze-file`,
-        formData // DO NOT manually set headers for FormData
+        formData
       );
 
       const data = response.data;
 
       if (mode === 'company') {
-        if (Array.isArray(data)) {
-          setBatchResult(data);
-        } else if (data && Array.isArray(data.ranking)) {
+        if (data && Array.isArray(data.ranking)) {
           setBatchResult(data.ranking);
         } else {
-          setError("⚠️ No valid results returned for company mode.");
+          setError("⚠️ Invalid company response from server.");
         }
       } else {
         if (
