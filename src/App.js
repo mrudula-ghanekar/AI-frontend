@@ -105,7 +105,7 @@ export default function App() {
         if (
           data &&
           data.status === 'success' &&
-          (data.suited_for_role === 'Yes' || data.suited_for_role === 'No') &&
+          typeof data.suited_for_role === 'string' &&
           Array.isArray(data.strong_points) &&
           Array.isArray(data.weak_points)
         ) {
