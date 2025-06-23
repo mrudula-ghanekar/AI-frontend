@@ -70,6 +70,8 @@ export default function App() {
 
     setLoading(true);
     setError(null);
+    setResult(null);
+    setBatchResult(null);
 
     try {
       const formData = new FormData();
@@ -90,32 +92,22 @@ export default function App() {
       );
 
       if (mode === 'company') {
-        let data = response.data;
-        try {
-          if (typeof data === 'string') {
-            const fixedJson = `[${data.replace(/}\s*,\s*{/g, '},{')}]`;
-            data = JSON.parse(fixedJson);
-          }
-          if (Array.isArray(data)) {
-            setBatchResult(data);
-          } else {
-            setError('⚠️ No valid results returned for company mode.');
-          }
-        } catch (e) {
-          console.error("Unexpected company response:", data);
-          setError('⚠️ Failed to parse company results.');
+        const data = response.data;
+
+        if (data && data.status === 'success' && Array.isArray(data.ranking)) {
+          setBatchResult(data.ranking);
+        } else {
+          setError("⚠️ No valid results returned for company mode.");
         }
       } else {
         const data = response.data;
 
-        // Validate expected keys
         if (
           data &&
           data.status === 'success' &&
           typeof data.suited_for_role === 'string' &&
           Array.isArray(data.strong_points) &&
-          Array.isArray(data.weak_points) &&
-          typeof data.recommendations === 'object'
+          Array.isArray(data.weak_points)
         ) {
           setResult({
             suitableForRole: data.suited_for_role === "Yes",
@@ -209,18 +201,16 @@ export default function App() {
             ) : <p>No areas for improvement noted.</p>}
           </section>
 
-          <section>
-            <h3>Suggestions</h3>
-            {result.recommendations ? (
-              <>
-                <p><strong>Courses:</strong> {result.recommendations.online_courses.join(', ')}</p>
-                <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels.join(', ')}</p>
-                <p><strong>Career Guides:</strong> {result.recommendations.career_guides.join(', ')}</p>
-                <p><strong>Alt. Roles:</strong> {result.recommendations.alternative_roles.join(', ')}</p>
-                <p><strong>Skills:</strong> {result.recommendations.skills_to_learn.join(', ')}</p>
-              </>
-            ) : <p>No suggestions provided.</p>}
-          </section>
+          {result.recommendations && (
+            <section>
+              <h3>Suggestions</h3>
+              <p><strong>Courses:</strong> {result.recommendations.online_courses.join(', ')}</p>
+              <p><strong>YouTube Channels:</strong> {result.recommendations.youtube_channels.join(', ')}</p>
+              <p><strong>Career Guides:</strong> {result.recommendations.career_guides.join(', ')}</p>
+              <p><strong>Alt. Roles:</strong> {result.recommendations.alternative_roles.join(', ')}</p>
+              <p><strong>Skills:</strong> {result.recommendations.skills_to_learn.join(', ')}</p>
+            </section>
+          )}
         </div>
       )}
 
