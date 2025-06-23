@@ -91,17 +91,17 @@ export default function App() {
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      if (mode === 'company') {
-        const data = response.data;
+      const data = response.data;
 
-        if (data && data.status === 'success' && Array.isArray(data.ranking)) {
+      if (mode === 'company') {
+        if (Array.isArray(data)) {
+          setBatchResult(data);
+        } else if (data && Array.isArray(data.ranking)) {
           setBatchResult(data.ranking);
         } else {
           setError("⚠️ No valid results returned for company mode.");
         }
       } else {
-        const data = response.data;
-
         if (
           data &&
           data.status === 'success' &&
