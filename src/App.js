@@ -24,17 +24,24 @@ export default function App() {
     setError(null);
   };
 
+  const removeFile = (fileName) => {
+    setFiles(prevFiles => prevFiles.filter(f => f.name !== fileName));
+  };
+
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: acceptedFiles => {
       if (acceptedFiles.length === 0) {
         setError("⚠️ Invalid file type. Please upload a PDF or DOCX.");
         return;
       }
-      if (mode === 'company' && acceptedFiles.length > 10) {
+      if (mode === 'company' && files.length + acceptedFiles.length > 10) {
         setError("⚠️ You can upload up to 10 resumes in company mode.");
         return;
       }
-      setFiles(acceptedFiles);
+      const uniqueNewFiles = acceptedFiles.filter(
+        newFile => !files.some(existing => existing.name === newFile.name)
+      );
+      setFiles(prev => [...prev, ...uniqueNewFiles]);
       setError(null);
     },
     multiple: mode === 'company',
@@ -87,7 +94,6 @@ export default function App() {
 
       const response = await axios.post(`${API_BASE_URL}/api/analyze-file`, formData);
       const data = response.data;
-      console.log("📦 API Response:", data);
 
       if (mode === 'company') {
         let ranking = [];
@@ -175,7 +181,15 @@ export default function App() {
         {files.length > 0 && (
           <div className="file-list">
             {files.map((file, idx) => (
-              <div key={idx} className="file-item">{file.name}</div>
+              <div key={idx} className="file-item">
+                <span>{file.name}</span>
+                <button
+                  className="file-item-close"
+                  onClick={() => removeFile(file.name)}
+                  title="Remove file"
+                  aria-label="Remove file"
+                />
+              </div>
             ))}
           </div>
         )}

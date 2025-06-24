@@ -111,6 +111,37 @@ button {
   border-radius: 8px;
   padding: 0.5rem 1rem;
   margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Modern Cross (Remove) Button */
+.file-item-close {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  color: red;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.file-item-close:hover {
+  background-color: #e4e6f7;
+  color: #4f46e5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* Optional: use × symbol for cross if no SVG or icon font is used */
+.file-item-close::before {
+  content: '×';
+  line-height: 1;
 }
 
 /* Error */
