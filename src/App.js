@@ -25,7 +25,7 @@ export default function App() {
   };
 
   const removeFile = (fileName) => {
-    setFiles(prevFiles => prevFiles.filter(f => f.name !== fileName));
+    setFiles(prev => prev.filter(f => f.name !== fileName));
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -96,20 +96,13 @@ export default function App() {
       const data = response.data;
 
       if (mode === 'company') {
-        let ranking = [];
-
-        if (Array.isArray(data)) {
-          ranking = data;
-        } else if (Array.isArray(data.ranking)) {
-          ranking = data.ranking;
-        } else if (data && data.file_name) {
-          ranking = [data];
-        }
-
-        if (ranking.length > 0) {
-          setBatchResult(ranking);
+        if (Array.isArray(data.ranked_resumes)) {
+          setBatchResult({
+            ranked: data.ranked_resumes,
+            topFits: data.top_fits || []
+          });
         } else {
-          setError("⚠️ Invalid company response from server.");
+          setError("⚠️ Invalid response format from server.");
         }
       } else {
         const rec = data.recommendations || {};
@@ -131,10 +124,8 @@ export default function App() {
       }
     } catch (error) {
       console.error('Upload error:', error);
-      if (error.response) {
-        const raw = error.response?.data?.error;
-        const clean = typeof raw === 'string' ? raw.replace(/[\n\r]/g, ' ') : 'An unexpected error occurred.';
-        setError(`⚠️ ${clean}`);
+      if (error.response?.data?.error) {
+        setError(`⚠️ ${error.response.data.error.replace(/[\n\r]/g, ' ')}`);
       } else if (error.request) {
         setError('⚠️ Network error. Please check your connection.');
       } else {
@@ -175,7 +166,11 @@ export default function App() {
 
         <div {...getRootProps({ className: 'dropzone-area' })}>
           <input {...getInputProps()} />
-          <p>Drag & drop resume(s) here or click to upload</p>
+          <p>
+            {mode === 'candidate'
+              ? 'Drag & drop resume here or click to upload'
+              : 'Drag & drop resume(s) here or click to upload'}
+          </p>
         </div>
 
         {files.length > 0 && (
@@ -188,7 +183,8 @@ export default function App() {
                   onClick={() => removeFile(file.name)}
                   title="Remove file"
                   aria-label="Remove file"
-                />
+                >
+                </button>
               </div>
             ))}
           </div>
@@ -234,22 +230,20 @@ export default function App() {
       {batchResult && (
         <div className="results-panel">
           <h2>Company Mode Results</h2>
-          {batchResult.map((entry, index) => (
-            <div key={index} className="result-section">
-              <h3>{entry.candidate_name || entry.file_name || 'Unnamed'} ({entry.score || 0}%)</h3>
-              <p><strong>Resume:</strong> {entry.file_name}</p>
-              <p><strong>Summary:</strong> {entry.summary}</p>
 
-              {entry.improvement_suggestions && entry.improvement_suggestions.length > 0 && (
-                <div>
-                  <h4>Improvement Suggestions</h4>
-                  <ul>
-                    {entry.improvement_suggestions.map((sugg, idx) => (
-                      <li key={idx}>{sugg}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+          {batchResult.topFits.length > 0 && (
+            <div className="top-fits-banner">
+              <strong>Top Fit Resumes (score ≥ 80):</strong> {batchResult.topFits.join(', ')}
+            </div>
+          )}
+
+          {batchResult.ranked.map((entry, index) => (
+            <div key={index} className="result-section">
+              <h3>Rank {entry.rank}: {entry.candidate_name || 'Unnamed'} ({entry.score || 0}%)</h3>
+              <p><strong>Resume:</strong> {entry.file_name}</p>
+              <p><strong>Company:</strong> {entry.company?.name || 'N/A'}</p>
+              <p><strong>Summary:</strong> {entry.summary}</p>
+              <p><strong>Why it fits:</strong> {entry.rank_summary}</p>
             </div>
           ))}
         </div>
