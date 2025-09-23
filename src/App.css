@@ -1,14 +1,268 @@
+/* Base reset and font */
 body {
-  font-family: Arial;
-  background: #eee;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: #f8f9fb;
+  color: #1a1a1a;
 }
 
+/* Container */
+.app-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* Header */
+.app-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.app-header h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.app-subtitle {
+  color: #777;
+  font-size: 1rem;
+  margin-top: 0;
+}
+
+/* Controls */
+.app-controls {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Buttons */
 button {
-  margin: 5px;
-  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
-input {
-  margin: 5px 0;
+.btn-primary {
+  background-color: #6366f1;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  border-radius: 12px;
+  margin-top: 1rem;
+}
+
+.btn-primary:hover {
+  background-color: #4f46e5;
+}
+
+.btn-secondary {
+  background-color: #e8eafc;
+  color: #333;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+/* Input */
+.input-role {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin: 1rem 0 1.5rem;
+}
+
+/* Dropzone */
+.dropzone-area {
+  border: 2px dashed #d0d0ff;
+  background: #f5f7ff;
+  padding: 2rem;
+  border-radius: 14px;
+  text-align: center;
+  font-size: 1rem;
+  color: #5a5a89;
+  transition: border 0.2s ease;
+}
+
+.dropzone-area:hover {
+  border-color: #a5a5f5;
+}
+
+/* Files */
+.file-list {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.file-item {
+  background: #f0f2f7;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Modern Cross (Remove) Button */
+.file-item-close {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  color: red;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.file-item-close:hover {
+  background-color: #e4e6f7;
+  color: #4f46e5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* Optional: use × symbol for cross if no SVG or icon font is used */
+.file-item-close::before {
+  content: '×';
+  line-height: 1;
+}
+
+/* Error */
+.error-banner {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #fff2f2;
+  color: #d32f2f;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+/* Result Panels */
+.results-panel {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.04);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.results-panel h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.result-section {
+  margin-top: 1rem;
+}
+
+.result-section h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.result-section ul {
+  padding-left: 1.2rem;
+}
+
+.result-section li {
+  margin-bottom: 0.5rem;
+  list-style-type: disc;
+  color: #444;
+}
+
+/* Status Badge */
+.badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.badge-success {
+  background-color: #e6f4ea;
+  color: #1e824c;
+}
+
+.badge-fail {
+  background-color: #fdecea;
+  color: #d93025;
+}
+
+/* Company Mode Results Table */
+.results-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.results-section h2 {
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
+
+.results-table th,
+.results-table td {
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.results-table th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  color: #555;
+}
+
+.results-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* Transitions */
+.results-panel,
+.app-controls,
+.results-section {
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
