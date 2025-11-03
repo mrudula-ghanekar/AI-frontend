@@ -1,0 +1,322 @@
+/* ==========================================================
+   🧭 CLIPPY QUEST — GAMIFIED CAREER JOURNEY EXPERIENCE
+   ========================================================== */
+
+/* ---------------- Animations ---------------- */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slowFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(37, 99, 235, 0.55);
+  }
+}
+
+@keyframes connectorFlow {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+/* ---------------- Layout ---------------- */
+.home-bg {
+  background: radial-gradient(circle at 20% 20%, #eaf1ff, #f9fbff 40%, #ffffff 100%);
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+}
+
+/* Ambient soft glow background */
+.home-bg::before {
+  content: "";
+  position: absolute;
+  top: -100px;
+  left: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(37,99,235,0.1), transparent 70%);
+  filter: blur(60px);
+  z-index: 0;
+}
+
+/* ---------------- Hero Section ---------------- */
+.hero-section {
+  position: relative;
+  z-index: 1;
+  animation: fadeSlideUp 0.9s ease-out;
+  text-align: center;
+  padding: 6rem 1.5rem 4rem;
+  max-width: 900px;
+  margin: auto;
+}
+
+.hero-section h1 {
+  font-size: 3.2rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #1d4ed8, #3b82f6, #60a5fa);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 1rem;
+}
+
+.hero-section p {
+  color: #4b5563;
+  font-size: 1.1rem;
+  max-width: 680px;
+  margin: 0.75rem auto 1.5rem;
+  line-height: 1.75;
+  font-weight: 400;
+}
+
+/* ---------------- Bot Icon ---------------- */
+.bot-icon {
+  animation: slowFloat 4s ease-in-out infinite;
+  opacity: 0.95;
+  color: #2563eb;
+  filter: drop-shadow(0 4px 8px rgba(37,99,235,0.25));
+}
+
+/* ---------------- Start Button ---------------- */
+.start-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding: 0.9rem 2rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.25);
+  transition: all 0.3s ease;
+}
+
+.start-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+}
+
+/* ==========================================================
+   🔐 LOGIN BUTTON — Top Left Corner (Small + Clean)
+   ========================================================== */
+.login-btn {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
+  z-index: 50;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  font-weight: 500;
+  font-size: 0.95rem;
+
+  padding: 0.5rem 1.2rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.25);
+  transition: all 0.25s ease;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(37, 99, 235, 0.4);
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+}
+
+/* Small login icon (lucide-react) */
+.login-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==========================================================
+   🌀 GAMIFIED JOURNEY PATH
+   ========================================================== */
+.journey-path {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.journey-step {
+  text-align: center;
+  position: relative;
+  margin-bottom: 2.5rem;
+  animation: fadeSlideUp 0.8s ease-out;
+}
+
+.glow-circle {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  border-radius: 50%;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: glowPulse 3s infinite ease-in-out;
+  color: white;
+}
+
+.level-text {
+  margin-top: 0.5rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: #2563eb;
+}
+
+.journey-step h4 {
+  color: #111827;
+  font-weight: 700;
+  margin-top: 0.3rem;
+}
+
+.journey-step p {
+  color: #4b5563;
+  font-size: 0.95rem;
+  max-width: 260px;
+  margin: 0.3rem auto;
+  line-height: 1.6;
+}
+
+/* Connector (glowing vertical line between steps) */
+.journey-connector {
+  width: 3px;
+  height: 70px;
+  background: linear-gradient(to bottom, #3b82f6, #60a5fa, #93c5fd);
+  background-size: 100% 200%;
+  animation: connectorFlow 3s linear infinite;
+  border-radius: 9999px;
+  opacity: 0.8;
+}
+
+/* ---------------- Footer ---------------- */
+.footer-fade {
+  text-align: center;
+  padding: 3rem 1rem 2rem;
+  font-size: 0.9rem;
+  color: #6b7280;
+  animation: fadeSlideUp 1.2s ease-out;
+}
+
+/* ==========================================================
+   🤖 CLIPPY ASSISTANT — FLOATING BOTTOM-RIGHT WIDGET
+   ========================================================== */
+.clippy-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 24px;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.clippy-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
+  animation: slowFloat 5s ease-in-out infinite, glowPulse 4s infinite ease-in-out;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.clippy-avatar:hover {
+  transform: scale(1.08);
+}
+
+.clippy-bubble {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #1f2937;
+  font-size: 0.95rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  max-width: 240px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.6s ease;
+  line-height: 1.4;
+}
+
+.clippy-bubble.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.clippy-bubble strong {
+  color: #2563eb;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 2.2rem;
+  }
+  .hero-section p {
+    font-size: 1rem;
+  }
+  .start-btn {
+    font-size: 1rem;
+    padding: 0.8rem 1.6rem;
+  }
+  .journey-path {
+    margin-top: 3.5rem;
+  }
+  .glow-circle {
+    width: 58px;
+    height: 58px;
+  }
+  .clippy-avatar {
+    width: 58px;
+    height: 58px;
+  }
+  .clippy-bubble {
+    max-width: 200px;
+    font-size: 0.9rem;
+  }
+  .login-btn {
+    top: 1rem;
+    left: 1rem;
+    font-size: 0.85rem;
+    padding: 0.4rem 1rem;
+  }
+}

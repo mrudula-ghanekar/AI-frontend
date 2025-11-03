@@ -1,0 +1,65 @@
+<svg
+  width="80"
+  height="80"
+  viewBox="0 0 240 240"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <linearGradient id="clipGrad" x1="0" x2="1">
+      <stop offset="0" stopColor="#a3b1c6" />
+      <stop offset="1" stopColor="#6c7a94" />
+    </linearGradient>
+  </defs>
+
+  {/* Background circle */}
+  <circle cx="120" cy="120" r="110" fill="#f5f8fb" />
+
+  {/* Paperclip body */}
+  <g transform="translate(42,18)">
+    <path
+      d="M30 30 C30 12, 48 12, 48 30 L48 140 C48 164, 74 168, 86 150 L138 78 C156 54, 140 20, 110 40 L78 62 C66 72, 58 68, 58 52 C58 36, 74 30, 86 38 L130 68"
+      fill="none"
+      stroke="url(#clipGrad)"
+      strokeWidth="10"
+      strokeLinecap="round"
+    />
+
+    {/* 👀 Eyes + 😀 Mouth animation */}
+    <g transform="translate(64,56)">
+      <motion.circle
+        cx="6"
+        cy="0"
+        r="6"
+        fill="#202124"
+        animate={{ scaleY: [1, 0.2, 1] }}
+        transition={{ repeat: Infinity, duration: 4 }}
+      />
+      <motion.circle
+        cx="30"
+        cy="0"
+        r="6"
+        fill="#202124"
+        animate={{ scaleY: [1, 0.2, 1] }}
+        transition={{ repeat: Infinity, duration: 4, delay: 1 }}
+      />
+      <motion.path
+        d="M4 18 C14 30, 22 30, 34 18"
+        stroke="#202124"
+        strokeWidth="2.5"
+        fill="none"
+        animate={{
+          d: [
+            "M4 18 C14 30, 22 30, 34 18",
+            "M4 24 C14 38, 22 38, 34 24",
+            "M4 18 C14 30, 22 30, 34 18",
+          ],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 1.2,
+          ease: "easeInOut",
+        }}
+      />
+    </g>
+  </g>
+</svg>
